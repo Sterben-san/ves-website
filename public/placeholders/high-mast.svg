@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 460" role="img" aria-label="High mast public lighting">
+  <rect width="620" height="460" fill="#182620"/>
+  <path d="M310 402V94" stroke="#eef4ef" stroke-width="18" stroke-linecap="round"/>
+  <path d="M194 112h232M220 154h180" stroke="#eef4ef" stroke-width="12" stroke-linecap="round"/>
+  <g fill="#f3c653">
+    <circle cx="184" cy="112" r="22"/>
+    <circle cx="436" cy="112" r="22"/>
+    <circle cx="210" cy="154" r="18"/>
+    <circle cx="410" cy="154" r="18"/>
+  </g>
+  <path d="M0 370c145-45 265-50 374-16 79 24 158 23 246-3v109H0z" fill="#2f6f4f"/>
+</svg>

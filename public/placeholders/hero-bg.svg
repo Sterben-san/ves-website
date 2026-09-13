@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 900" role="img" aria-label="Rural road smart lighting">
+  <rect width="1400" height="900" fill="#182620"/>
+  <path d="M0 590c220-70 390-86 590-36 208 52 364 37 810-132v478H0z" fill="#2f6f4f"/>
+  <path d="M0 690c250-80 538-69 820 34 184 67 354 62 580-30v206H0z" fill="#b7d65b"/>
+  <path d="M720 900 570 470h72l230 430z" fill="#263b32"/>
+  <path d="M680 900 765 470h72L810 900z" fill="#263b32"/>
+  <g stroke="#f3c653" stroke-width="12" stroke-linecap="round">
+    <path d="M320 475V255M320 255h130"/>
+    <path d="M970 405V178M970 178h150"/>
+  </g>
+  <circle cx="470" cy="255" r="34" fill="#f3c653"/>
+  <circle cx="1138" cy="178" r="40" fill="#f3c653"/>
+</svg>

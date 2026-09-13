@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 460" role="img" aria-label="Rural field lighting system">
+  <rect width="620" height="460" fill="#fbfcf8"/>
+  <path d="M0 300h620v160H0z" fill="#2f6f4f"/>
+  <path d="M0 350c116-37 205-43 300-15 110 33 205 29 320-20v145H0z" fill="#b7d65b"/>
+  <path d="M150 330V154M150 154h96M448 318V118M448 118h88" stroke="#182620" stroke-width="14" stroke-linecap="round"/>
+  <circle cx="266" cy="154" r="26" fill="#f3c653"/>
+  <circle cx="552" cy="118" r="26" fill="#f3c653"/>
+  <path d="M300 460 350 260h72l78 200z" fill="#b76e3c"/>
+</svg>

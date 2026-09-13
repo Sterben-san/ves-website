@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 360" role="img" aria-label="Public infrastructure collaboration">
+  <rect width="600" height="360" fill="#eef4ef"/>
+  <rect x="54" y="62" width="492" height="236" rx="12" fill="#ffffff"/>
+  <path d="M92 246h416" stroke="#2f6f4f" stroke-width="10"/>
+  <circle cx="174" cy="150" r="42" fill="#b7d65b"/>
+  <circle cx="300" cy="150" r="42" fill="#f3c653"/>
+  <circle cx="426" cy="150" r="42" fill="#b76e3c"/>
+  <path d="M132 222c35-34 71-34 106 0M258 222c35-34 71-34 106 0M384 222c35-34 71-34 106 0" fill="none" stroke="#182620" stroke-width="10" stroke-linecap="round"/>
+</svg>

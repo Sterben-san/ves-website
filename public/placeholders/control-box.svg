@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 460" role="img" aria-label="Secure lighting control box">
+  <rect width="620" height="460" fill="#eef4ef"/>
+  <rect x="160" y="70" width="300" height="320" rx="18" fill="#ffffff" stroke="#182620" stroke-width="16"/>
+  <circle cx="310" cy="178" r="50" fill="#b7d65b"/>
+  <path d="M286 178h48M310 154v48" stroke="#182620" stroke-width="14" stroke-linecap="round"/>
+  <rect x="214" y="264" width="192" height="54" rx="8" fill="#2f6f4f"/>
+  <path d="M238 336h144" stroke="#b76e3c" stroke-width="14" stroke-linecap="round"/>
+</svg>

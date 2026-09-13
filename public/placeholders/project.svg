@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 560" role="img" aria-label="Pilot deployment site">
+  <rect width="720" height="560" fill="#eef4ef"/>
+  <path d="M78 402c128-65 227-75 364-32 84 26 151 24 200-8v120H78z" fill="#2f6f4f"/>
+  <rect x="90" y="112" width="540" height="290" rx="16" fill="#ffffff"/>
+  <path d="M142 314h436" stroke="#182620" stroke-width="16" stroke-linecap="round"/>
+  <path d="M218 290V172M218 172h76M462 290V148M462 148h88" stroke="#182620" stroke-width="12" stroke-linecap="round"/>
+  <circle cx="310" cy="172" r="25" fill="#f3c653"/>
+  <circle cx="568" cy="148" r="28" fill="#f3c653"/>
+</svg>

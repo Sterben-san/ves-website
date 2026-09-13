@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 460" role="img" aria-label="Autonomous solar street light">
+  <rect width="620" height="460" fill="#fbfcf8"/>
+  <path d="M0 344c116-45 216-50 333-14 99 31 177 26 287-20v150H0z" fill="#eef4ef"/>
+  <path d="M310 390V102" stroke="#182620" stroke-width="18" stroke-linecap="round"/>
+  <path d="M310 126h132" stroke="#182620" stroke-width="18" stroke-linecap="round"/>
+  <circle cx="462" cy="126" r="34" fill="#f3c653"/>
+  <rect x="218" y="88" width="148" height="54" rx="8" fill="#2f6f4f" transform="rotate(-12 292 115)"/>
+  <path d="M210 88l148 54M246 82l148 54M282 76l148 54" stroke="#b7d65b" stroke-width="5"/>
+</svg>

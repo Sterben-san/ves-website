@@ -1,0 +1,185 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  name         String
+  role         String    @default("admin")
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model SectionMedia {
+  id         String   @id @default(cuid())
+  sectionKey String   @unique
+  mediaType  String
+  url        String   @db.Text
+  publicId   String   @default("")
+  altText    String   @db.Text
+  uploadedBy String?
+  width      Int?
+  height     Int?
+  bytes      Int?
+  updatedAt  DateTime @updatedAt
+}
+
+model SectionCopy {
+  id                 String   @id @default(cuid())
+  sectionKey         String   @unique
+  eyebrow            String
+  title              String
+  body               String   @db.Text
+  ctaLabel           String?
+  ctaHref            String?
+  visible            Boolean  @default(true)
+  theme              String   @default("dark")
+  animationDirection String   @default("right")
+  animationSeconds   Int      @default(46)
+  maxItems           Int      @default(8)
+  updatedAt          DateTime @updatedAt
+}
+
+model Project {
+  id            String   @id @default(cuid())
+  title         String   @default("")
+  slug          String   @unique
+  summary       String   @db.Text
+  body          String   @db.Text
+  location      String?
+  category      String?
+  coverUrl      String?  @db.Text
+  coverPublicId String?
+  displayOrder  Int      @default(0)
+  featured      Boolean  @default(false)
+  published     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Announcement {
+  id                     String   @id @default(cuid())
+  kind                   String
+  title                  String
+  slug                   String   @unique
+  body                   String   @db.Text
+  ctaLabel               String?
+  ctaHref                String?
+  backgroundType         String   @default("none")
+  backgroundUrl          String?  @db.Text
+  backgroundPublicId     String?
+  posterUrl              String?  @db.Text
+  posterPublicId         String?
+  mobileFallbackUrl      String?  @db.Text
+  mobileFallbackPublicId String?
+  overlayOpacity         Float    @default(0.5)
+  textPosition           String   @default("left")
+  pinned                 Boolean  @default(false)
+  published              Boolean  @default(false)
+  authorId               String
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+}
+
+model HomepageNewsItem {
+  id            String   @id @default(cuid())
+  kind          String
+  title         String
+  summary       String   @db.Text
+  body          String?  @db.Text
+  imageUrl      String?  @db.Text
+  imagePublicId String?
+  linkLabel     String?
+  linkHref      String?  @db.Text
+  displayOrder  Int      @default(0)
+  published     Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model InternshipUpdate {
+  id                 String   @id @default(cuid())
+  title              String
+  description        String   @db.Text
+  location           String?
+  attachmentUrl      String?  @db.Text
+  attachmentPublicId String?
+  applyUrl           String?  @db.Text
+  applyEmail         String?
+  active             Boolean  @default(false)
+  postedBy           String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model SocialLink {
+  id           String   @id @default(cuid())
+  platform     String
+  postUrl      String   @db.VarChar(512)
+  caption      String?  @db.Text
+  thumbnailUrl String?  @db.Text
+  featured     Boolean  @default(false)
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([platform, postUrl])
+}
+
+model TeamMember {
+  id            String   @id @default(cuid())
+  fullName      String
+  role          String
+  bio           String   @db.Text
+  email         String   @unique
+  phone         String?
+  linkedinUrl   String   @db.Text
+  socials       Json
+  photoUrl      String?  @db.Text
+  photoPublicId String?
+  displayOrder  Int      @default(0)
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model FieldProcessStep {
+  id           String   @id @default(cuid())
+  stepKey      String   @unique
+  phase        String
+  copy         String   @db.Text
+  displayOrder Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Certificate {
+  id                  String    @id @default(cuid())
+  title               String
+  issuer              String
+  description         String    @db.Text
+  certificateUrl      String    @unique @db.VarChar(512)
+  certificatePublicId String?
+  previewUrl          String?   @db.Text
+  previewPublicId     String?
+  issuedOn            DateTime?
+  displayOrder        Int       @default(0)
+  published           Boolean   @default(true)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+}
+
+model SeedState {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
