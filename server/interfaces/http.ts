@@ -154,9 +154,27 @@ export function assertSameOrigin(request: NextRequest) {
     return;
   }
 
-  if (origin !== request.nextUrl.origin) {
+  if (!getAllowedOrigins(request).has(origin)) {
     throw new Error("Cross-origin request blocked.");
   }
+}
+
+function getAllowedOrigins(request: NextRequest) {
+  const origins = new Set([request.nextUrl.origin]);
+  const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  if (configuredSiteUrl) {
+    try {
+      origins.add(new URL(configuredSiteUrl).origin);
+    } catch {}
+  }
+
+  const forwardedHost = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+  const forwardedProto = request.headers.get("x-forwarded-proto") ?? "https";
+  if (forwardedHost) {
+    origins.add(`${forwardedProto}://${forwardedHost}`);
+  }
+
+  return origins;
 }
 
 function assertUploadSize(file: File) {
