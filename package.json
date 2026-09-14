@@ -5,17 +5,21 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build --webpack",
-    "start": "node scripts/validate-env.mjs && next start -p ${PORT:-3000}",
+    "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "validate:surface": "node scripts/validate-feature-surface.mjs",
+    "validate:routes": "node scripts/validate-runtime-routes.mjs",
+    "validate:mysql": "node scripts/validate-mysql-transition.mjs",
+    "validate:env": "node scripts/validate-env.mjs",
     "seed": "tsx scripts/seed.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
     "postinstall": "prisma generate"
   },
   "engines": {
-    "node": "20.x"
+    "node": ">=20"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",

@@ -17,7 +17,27 @@ function rg(pattern, paths = ["."]) {
   try {
     const output = execFileSync(
       "rg",
-      ["-n", pattern, ...paths, "--glob", "!node_modules/**", "--glob", "!.next/**", "--glob", "!package-lock.json", "--glob", "!scripts/validate-mysql-transition.mjs"],
+      [
+        "-n",
+        pattern,
+        ...paths,
+        "--glob",
+        "!node_modules/**",
+        "--glob",
+        "!.next/**",
+        "--glob",
+        "!package-lock.json",
+        "--glob",
+        "!scripts/validate-mysql-transition.mjs",
+        "--glob",
+        "!scripts/migrate-mongo-to-mysql.js",
+        "--glob",
+        "!MIGRATION_AUDIT.md",
+        "--glob",
+        "!MYSQL_TRANSITION_VALIDATION_LOG.md",
+        "--glob",
+        "!README-DEPLOY.md"
+      ],
       { encoding: "utf8" }
     );
     return output.trim();
@@ -62,6 +82,18 @@ for (const scriptName of ["prisma:generate", "prisma:migrate", "postinstall", "s
   } else {
     log("fail", `package script ${scriptName}`, "Missing script");
   }
+}
+
+if (pkg.scripts?.dev === "next dev" && pkg.scripts?.build === "next build --webpack" && pkg.scripts?.start === "next start") {
+  log("pass", "Hostinger script shape", "dev/start match defaults; build uses verified webpack path");
+} else {
+  log("fail", "Hostinger script shape", "Expected dev=next dev, build=next build --webpack, start=next start");
+}
+
+if (pkg.engines?.node === ">=20") {
+  log("pass", "Node engine target", ">=20");
+} else {
+  log("fail", "Node engine target", `Expected >=20 but found ${pkg.engines?.node ?? "missing"}`);
 }
 
 const staleReferences = rg("MONGODB_URI|mongoose|Mongoose|MongoDB|mongodb|connectMongo|server/infrastructure/mongo", [
@@ -114,6 +146,31 @@ if (dbConfig.includes("DATABASE_URL") || dbConfig.includes("databaseUrl")) {
   log("pass", "DB config reads DATABASE_URL", "Prisma singleton is env-driven");
 } else {
   log("fail", "DB config reads DATABASE_URL", "DATABASE_URL/databaseUrl not found");
+}
+
+const envExample = read(".env.example");
+if (envExample.includes("DATABASE_URL=") && !envExample.includes("MONGODB_URI")) {
+  log("pass", ".env.example MySQL variables", "DATABASE_URL present and MONGODB_URI absent");
+} else {
+  log("fail", ".env.example MySQL variables", "Expected DATABASE_URL and no MONGODB_URI");
+}
+
+if (existsSync("schema.sql") && read("schema.sql").includes("CREATE TABLE `Project`") && read("schema.sql").includes("CREATE TABLE `Admin`")) {
+  log("pass", "schema.sql", "MySQL table definitions present");
+} else {
+  log("fail", "schema.sql", "Missing required MySQL schema export");
+}
+
+if (existsSync("README-DEPLOY.md") && read("README-DEPLOY.md").includes("Hostinger") && read("README-DEPLOY.md").includes("DATABASE_URL")) {
+  log("pass", "Hostinger deployment README", "README-DEPLOY.md documents settings and environment");
+} else {
+  log("fail", "Hostinger deployment README", "Missing deployment handoff documentation");
+}
+
+if (existsSync("MIGRATION_AUDIT.md") && read("MIGRATION_AUDIT.md").includes("No live Mongoose")) {
+  log("pass", "Migration audit document", "MIGRATION_AUDIT.md records source audit");
+} else {
+  log("fail", "Migration audit document", "Missing migration audit");
 }
 
 const adminLoginPage = read("app/admin/login/page.tsx");
