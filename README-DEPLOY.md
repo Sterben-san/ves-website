@@ -7,7 +7,7 @@ This app is a Next.js App Router site with a custom admin CMS, Prisma, MySQL, Cl
 - Node version: `>=20`
 - Install command: `npm install`
 - Build command: `npm run build`
-- Start command: `npm run start:hostinger`
+- Start command: `npm run start`
 - Output directory: `.next`
 - Entry point: not required for Next.js Web Apps
 
@@ -17,8 +17,8 @@ This app is a Next.js App Router site with a custom admin CMS, Prisma, MySQL, Cl
 {
   "dev": "next dev",
   "build": "next build --webpack",
-  "start": "next start",
-  "start:hostinger": "npm run deploy:db && next start"
+  "start": "npm run deploy:db && next start",
+  "start:hostinger": "npm run start"
 }
 ```
 
@@ -50,6 +50,7 @@ ADMIN_ONE_EMAIL=first-admin@example.com
 ADMIN_ONE_PASSWORD=strong-password
 ADMIN_TWO_EMAIL=second-admin@example.com
 ADMIN_TWO_PASSWORD=different-strong-password
+DEPLOYMENT_DIAGNOSTIC_TOKEN=random-temporary-debug-token
 ```
 
 You can also import the template file:
@@ -78,6 +79,14 @@ npm run verify:admins
 ```
 
 `deploy:db` is idempotent. It reapplies pending Prisma migrations and reseeds the two admin password hashes from the current `ADMIN_ONE_*` and `ADMIN_TWO_*` environment variables.
+
+If there is no Hostinger terminal, use the protected diagnostics endpoint after setting `DEPLOYMENT_DIAGNOSTIC_TOKEN`:
+
+```text
+https://your-domain.com/api/deployment/status?token=DEPLOYMENT_DIAGNOSTIC_TOKEN_VALUE
+```
+
+This shows whether production env values are present, whether MySQL is connected, and whether the database contains exactly the two expected admin rows. Remove or rotate `DEPLOYMENT_DIAGNOSTIC_TOKEN` after debugging.
 
 Expected seed result:
 
