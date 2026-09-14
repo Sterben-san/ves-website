@@ -2,9 +2,9 @@ import { PublicHeader as Header } from "../components/PublicHeader";
 import { Footer } from "../components/Footer";
 import { MediaAsset } from "../components/MediaAsset";
 import { Team } from "../components/Team";
-import { getMedia, getMediaMap } from "@/lib/media";
-import { getActiveTeamMembers } from "@/lib/content";
-import { company, mission, principles } from "@/lib/siteContent";
+import { getActiveTeamMembers } from "../../../lib/content";
+import { getMedia, getMediaMap } from "../../../lib/media";
+import { company, mission, principles } from "../../../lib/siteContent";
 
 export const dynamic = "force-dynamic";
 

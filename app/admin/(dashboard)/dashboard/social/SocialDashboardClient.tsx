@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
-import { SocialEmbed } from "@/app/(public)/components/SocialEmbed";
+import { SocialEmbed } from "../../../../(public)/components/SocialEmbed";
 import type { SocialLink, SocialPlatform } from "@/server/domain/entities";
 import { adminFetch } from "../../_components/adminFetch";
 import { DataTable, type DataTableColumn } from "../../_components/DataTable";

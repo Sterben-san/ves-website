@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
-import { AnnouncementHero } from "@/app/(public)/components/AnnouncementHero";
+import { AnnouncementHero } from "../../../../(public)/components/AnnouncementHero";
 import type { Announcement, AnnouncementKind } from "@/server/domain/entities";
 import { adminFetch } from "../../_components/adminFetch";
 import { useToast } from "../../_components/Toast";

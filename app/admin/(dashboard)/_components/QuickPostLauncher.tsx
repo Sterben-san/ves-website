@@ -2,7 +2,7 @@
 
 import { ChangeEvent, FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { SocialEmbed } from "@/app/(public)/components/SocialEmbed";
+import { SocialEmbed } from "../../../(public)/components/SocialEmbed";
 import type { Announcement, AnnouncementKind, SocialPlatform } from "@/server/domain/entities";
 import { adminFetch } from "./adminFetch";
 import { useToast } from "./Toast";
