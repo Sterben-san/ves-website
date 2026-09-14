@@ -43,16 +43,19 @@ export async function GET(request: NextRequest) {
 
 async function getDatabaseStatus() {
   try {
-    const admins = await getPrisma().admin.findMany({
+    const prisma = getPrisma();
+    const admins = await prisma.admin.findMany({
       select: { email: true, name: true, lastLoginAt: true, createdAt: true, updatedAt: true },
       orderBy: { email: "asc" }
     });
+    const counts = await getContentCounts(prisma);
     const expectedEmails = [process.env.ADMIN_ONE_EMAIL, process.env.ADMIN_TWO_EMAIL]
       .filter(Boolean)
       .map((email) => email!.toLowerCase().trim());
 
     return {
       connected: true,
+      counts,
       adminRows: admins.map((admin) => ({
         email: admin.email,
         name: admin.name,
@@ -70,6 +73,66 @@ async function getDatabaseStatus() {
       error: error instanceof Error ? error.message : String(error)
     };
   }
+}
+
+async function getContentCounts(prisma: ReturnType<typeof getPrisma>) {
+  const [
+    announcements,
+    publishedAnnouncements,
+    pinnedAnnouncements,
+    internships,
+    activeInternships,
+    homepageNews,
+    publishedHomepageNews,
+    certificates,
+    publishedCertificates,
+    teamMembers,
+    activeTeamMembers,
+    projects,
+    publishedProjects,
+    socialLinks,
+    featuredSocialLinks,
+    fieldProcessSteps,
+    sectionMedia
+  ] = await Promise.all([
+    prisma.announcement.count(),
+    prisma.announcement.count({ where: { published: true } }),
+    prisma.announcement.count({ where: { pinned: true, published: true } }),
+    prisma.internshipUpdate.count(),
+    prisma.internshipUpdate.count({ where: { active: true } }),
+    prisma.homepageNewsItem.count(),
+    prisma.homepageNewsItem.count({ where: { published: true } }),
+    prisma.certificate.count(),
+    prisma.certificate.count({ where: { published: true } }),
+    prisma.teamMember.count(),
+    prisma.teamMember.count({ where: { active: true } }),
+    prisma.project.count(),
+    prisma.project.count({ where: { published: true } }),
+    prisma.socialLink.count(),
+    prisma.socialLink.count({ where: { featured: true } }),
+    prisma.fieldProcessStep.count(),
+    prisma.sectionMedia.count()
+  ]);
+
+  return {
+    announcements,
+    publishedAnnouncements,
+    pinnedAnnouncements,
+    internships,
+    activeInternships,
+    homepageNews,
+    publishedHomepageNews,
+    certificates,
+    publishedCertificates,
+    teamMembers,
+    activeTeamMembers,
+    projects,
+    publishedProjects,
+    socialLinks,
+    featuredSocialLinks,
+    fieldProcessSteps,
+    sectionMedia
+  };
 }
 
 function summarizePlain(value?: string) {

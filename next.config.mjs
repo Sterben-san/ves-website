@@ -38,9 +38,37 @@ const nextConfig = {
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "X-Content-Type-Options", value: "nosniff" }
         ]
+      },
+      {
+        source: "/",
+        headers: noStoreHeaders()
+      },
+      {
+        source: "/:path(about|contact|projects|internships|social|news|certifications|solutions)",
+        headers: noStoreHeaders()
+      },
+      {
+        source: "/:path(about|contact|projects|internships|social|news|certifications|solutions)/:slug*",
+        headers: noStoreHeaders()
+      },
+      {
+        source: "/admin/:path*",
+        headers: noStoreHeaders()
+      },
+      {
+        source: "/api/:path*",
+        headers: noStoreHeaders()
       }
     ];
   }
 };
+
+function noStoreHeaders() {
+  return [
+    { key: "Cache-Control", value: "no-store, no-cache, must-revalidate, proxy-revalidate" },
+    { key: "Pragma", value: "no-cache" },
+    { key: "Expires", value: "0" }
+  ];
+}
 
 export default nextConfig;

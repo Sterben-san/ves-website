@@ -7,12 +7,20 @@ export const refreshCookie = "ves_refresh";
 const maxUploadBytes = 100 * 1024 * 1024;
 
 export function json(data: unknown, init?: ResponseInit) {
-  return NextResponse.json(data, init);
+  return NextResponse.json(data, withNoStore(init));
 }
 
 export function errorResponse(error: unknown, status = 400) {
   const message = status >= 500 ? "Unexpected server error." : error instanceof Error ? error.message : "Unexpected request error.";
-  return NextResponse.json({ error: message }, { status });
+  return NextResponse.json({ error: message }, withNoStore({ status }));
+}
+
+function withNoStore(init?: ResponseInit): ResponseInit {
+  const headers = new Headers(init?.headers);
+  headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+  headers.set("Pragma", "no-cache");
+  headers.set("Expires", "0");
+  return { ...init, headers };
 }
 
 export function logPublicRouteFailure(route: string, error: unknown) {
