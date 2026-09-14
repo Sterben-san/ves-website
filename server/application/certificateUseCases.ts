@@ -62,7 +62,7 @@ export class CreateCertificateUseCase {
       issuer: required(input.issuer, "Issuer"),
       description: optional(input.description) ?? "",
       issuedOn: optionalDate(input.issuedOn),
-      displayOrder: input.displayOrder ?? Date.now(),
+      displayOrder: input.displayOrder ?? currentSortOrder(),
       published: input.published ?? true,
       certificateUrl: file.certificateUrl,
       certificatePublicId: file.certificatePublicId
@@ -191,6 +191,10 @@ function optionalDate(value?: string) {
 
 function slugFolder(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "certificate";
+}
+
+function currentSortOrder() {
+  return Math.floor(Date.now() / 1000);
 }
 
 async function deleteStored(storage: IStorageService, publicId?: string) {

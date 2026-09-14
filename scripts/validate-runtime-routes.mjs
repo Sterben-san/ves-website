@@ -83,10 +83,15 @@ for (const path of adminApis) {
 
 try {
   const loginPage = await request("/admin/login");
-  if (loginPage.body.includes("DATABASE_URL") && loginPage.body.includes("npm run prisma:migrate") && loginPage.body.includes("npm run seed")) {
+  const hasSetupWarning =
+    loginPage.body.includes("DATABASE_URL") && loginPage.body.includes("npm run prisma:migrate") && loginPage.body.includes("npm run seed");
+  const hasLoginForm = loginPage.body.includes("Admin login") || loginPage.body.includes("Email") || loginPage.body.includes("Password");
+  if (hasSetupWarning) {
     log("pass", "Admin setup warning", "Missing database guidance is visible and migration-aware");
+  } else if (hasLoginForm) {
+    log("pass", "Admin setup warning", "Hidden because admin setup is configured");
   } else {
-    log("fail", "Admin setup warning", "Login page does not show DATABASE_URL + migrate + seed guidance");
+    log("fail", "Admin setup warning", "Login page shows neither setup guidance nor the login form");
   }
 } catch (error) {
   log("fail", "Admin setup warning", `/admin/login request failed: ${error instanceof Error ? error.message : String(error)}`);

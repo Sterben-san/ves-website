@@ -12,6 +12,7 @@
     "validate:surface": "node scripts/validate-feature-surface.mjs",
     "validate:routes": "node scripts/validate-runtime-routes.mjs",
     "validate:mysql": "node scripts/validate-mysql-transition.mjs",
+    "validate:admin-demo": "node scripts/validate-admin-demo-flows.mjs",
     "validate:env": "node scripts/validate-env.mjs",
     "seed": "tsx scripts/seed.ts",
     "prisma:generate": "prisma generate",

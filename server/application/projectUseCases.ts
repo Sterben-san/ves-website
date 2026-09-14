@@ -44,7 +44,7 @@ export class CreateProjectUseCase {
       body: optional(input.body) ?? "",
       location: optional(input.location),
       category: optional(input.category),
-      displayOrder: input.displayOrder ?? Date.now(),
+      displayOrder: input.displayOrder ?? currentSortOrder(),
       featured: Boolean(input.featured),
       published: Boolean(input.published),
       ...cover
@@ -181,6 +181,10 @@ function optional(value?: string) {
 
 function optimizeCloudinaryUrl(url: string) {
   return url.includes("/upload/") ? url.replace("/upload/", "/upload/f_auto,q_auto/") : url;
+}
+
+function currentSortOrder() {
+  return Math.floor(Date.now() / 1000);
 }
 
 async function deleteStored(storage: IStorageService, publicId?: string) {

@@ -34,7 +34,7 @@ export class CreateHomepageNewsUseCase {
       body: optional(input.body),
       linkLabel: optional(input.linkLabel),
       linkHref: optional(input.linkHref),
-      displayOrder: input.displayOrder ?? Date.now(),
+      displayOrder: input.displayOrder ?? currentSortOrder(),
       published: Boolean(input.published),
       ...image
     });
@@ -154,6 +154,10 @@ function optional(value?: string) {
 
 function optimizeCloudinaryUrl(url: string) {
   return url.includes("/upload/") ? url.replace("/upload/", "/upload/f_auto,q_auto/") : url;
+}
+
+function currentSortOrder() {
+  return Math.floor(Date.now() / 1000);
 }
 
 async function deleteStored(storage: IStorageService, publicId?: string) {

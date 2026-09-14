@@ -41,7 +41,7 @@ export class CreateTeamMemberUseCase {
       phone: optional(input.phone),
       linkedinUrl: requiredUrl(input.linkedinUrl, "LinkedIn URL"),
       socials: parseSocials(input.socials),
-      displayOrder: input.displayOrder ?? Date.now(),
+      displayOrder: input.displayOrder ?? currentSortOrder(),
       active: input.active ?? true,
       ...photo
     });
@@ -220,6 +220,10 @@ function slugFolder(value: string) {
 
 function optimizeCloudinaryUrl(url: string) {
   return url.includes("/upload/") ? url.replace("/upload/", "/upload/f_auto,q_auto/") : url;
+}
+
+function currentSortOrder() {
+  return Math.floor(Date.now() / 1000);
 }
 
 async function deleteStored(storage: IStorageService, publicId?: string) {

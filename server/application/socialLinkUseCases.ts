@@ -33,7 +33,7 @@ export class AddSocialLinkUseCase {
       caption: input.caption?.trim() || undefined,
       thumbnailUrl: input.thumbnailUrl?.trim() || undefined,
       featured: Boolean(input.featured),
-      sortOrder: Date.now()
+      sortOrder: currentSortOrder()
     });
   }
 }
@@ -87,4 +87,8 @@ export function validateSocialUrl(value: string): { platform: SocialPlatform; po
     return { platform: "linkedin", postUrl: url.toString() };
   }
   throw new Error("Use a public Instagram post/reel URL or LinkedIn post/update URL.");
+}
+
+function currentSortOrder() {
+  return Math.floor(Date.now() / 1000);
 }
