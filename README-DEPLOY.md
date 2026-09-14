@@ -4,7 +4,7 @@ This app is a Next.js App Router site with a custom admin CMS, Prisma, MySQL, Cl
 
 ## Hostinger Build Settings
 
-- Node version: `>=20`
+- Node version: `22`
 - Install command: `npm install`
 - Build command: `npm run build`
 - Start command: `npm run start`
@@ -17,7 +17,8 @@ This app is a Next.js App Router site with a custom admin CMS, Prisma, MySQL, Cl
 {
   "dev": "next dev",
   "build": "next build --webpack",
-  "start": "npm run deploy:db && next start",
+  "prestart": "npm run deploy:db",
+  "start": "next start -p ${PORT:-3000}",
   "start:hostinger": "npm run start"
 }
 ```

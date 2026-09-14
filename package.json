@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build --webpack",
-    "start": "npm run deploy:db && next start",
+    "prestart": "npm run deploy:db",
+    "start": "next start -p ${PORT:-3000}",
     "start:hostinger": "npm run start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
@@ -23,7 +24,7 @@
     "postinstall": "prisma generate"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
