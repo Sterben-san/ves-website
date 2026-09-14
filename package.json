@@ -14,6 +14,7 @@
     "validate:mysql": "node scripts/validate-mysql-transition.mjs",
     "validate:admin-demo": "node scripts/validate-admin-demo-flows.mjs",
     "validate:env": "node scripts/validate-env.mjs",
+    "deploy:db": "prisma migrate deploy && npm run seed",
     "seed": "tsx scripts/seed.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",

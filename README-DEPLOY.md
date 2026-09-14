@@ -38,6 +38,7 @@ Set these in Hostinger's environment variable dashboard. Do not commit real valu
 
 ```bash
 DATABASE_URL=mysql://USER:PASSWORD@HOST:3306/DATABASE
+NODE_ENV=production
 JWT_ACCESS_SECRET=long-random-secret
 JWT_REFRESH_SECRET=different-long-random-secret
 CLOUDINARY_CLOUD_NAME=cloud-name
@@ -50,6 +51,14 @@ ADMIN_TWO_EMAIL=second-admin@example.com
 ADMIN_TWO_PASSWORD=different-strong-password
 ```
 
+You can also import the template file:
+
+```text
+.env.hostinger.example
+```
+
+Replace every placeholder first. `NEXT_PUBLIC_SITE_URL` must be the final `https://` domain.
+
 Cloudinary is required for CMS image, video, and PDF uploads.
 
 ## Database Setup
@@ -57,8 +66,7 @@ Cloudinary is required for CMS image, video, and PDF uploads.
 After Hostinger MySQL is created and `DATABASE_URL` is set:
 
 ```bash
-npm run prisma:migrate
-npm run seed
+npm run deploy:db
 ```
 
 Expected seed result:
