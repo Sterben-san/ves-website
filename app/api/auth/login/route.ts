@@ -32,7 +32,8 @@ export async function POST(request: NextRequest) {
     }
 
     const input = schema.parse(raw);
-    const result = await createContainer().loginAdmin.execute(input.email, input.password);
+    const container = createContainer();
+    const result = await loginWithBootstrap(container, input.email, input.password);
     resetAttempts(rateLimitKey(input.email, clientKey));
     const response = NextResponse.json({ admin: result.admin });
     setAuthCookies(response, result.accessToken, result.refreshToken);
@@ -44,6 +45,47 @@ export async function POST(request: NextRequest) {
     }
     return NextResponse.json({ error: "Incorrect email or password." }, { status: 401 });
   }
+}
+
+async function loginWithBootstrap(container: ReturnType<typeof createContainer>, email: string, password: string) {
+  try {
+    return await container.loginAdmin.execute(email, password);
+  } catch (error) {
+    const adminSeed = getMatchingSeedAdmin(email, password);
+    if (!adminSeed) {
+      throw error;
+    }
+
+    await container.admins.upsert({
+      email: adminSeed.email,
+      passwordHash: await container.passwords.hash(password),
+      name: adminSeed.name,
+      role: "admin"
+    });
+
+    return container.loginAdmin.execute(email, password);
+  }
+}
+
+function getMatchingSeedAdmin(email: string, password: string) {
+  const normalizedEmail = email.toLowerCase().trim();
+  const candidates = [
+    {
+      email: process.env.ADMIN_ONE_EMAIL?.toLowerCase().trim(),
+      password: process.env.ADMIN_ONE_PASSWORD,
+      name: "VES Admin"
+    },
+    {
+      email: process.env.ADMIN_TWO_EMAIL?.toLowerCase().trim(),
+      password: process.env.ADMIN_TWO_PASSWORD,
+      name: "VES Operations"
+    }
+  ];
+
+  return candidates.find(
+    (candidate): candidate is { email: string; password: string; name: string } =>
+      Boolean(candidate.email && candidate.password) && candidate.email === normalizedEmail && candidate.password === password
+  );
 }
 
 function isRateLimited(key: string) {
