@@ -7,7 +7,7 @@ This app is a Next.js App Router site with a custom admin CMS, Prisma, MySQL, Cl
 - Node version: `>=20`
 - Install command: `npm install`
 - Build command: `npm run build`
-- Start command: `npm run start`
+- Start command: `npm run start:hostinger`
 - Output directory: `.next`
 - Entry point: not required for Next.js Web Apps
 
@@ -17,7 +17,8 @@ This app is a Next.js App Router site with a custom admin CMS, Prisma, MySQL, Cl
 {
   "dev": "next dev",
   "build": "next build --webpack",
-  "start": "next start"
+  "start": "next start",
+  "start:hostinger": "npm run deploy:db && next start"
 }
 ```
 
@@ -68,6 +69,15 @@ After Hostinger MySQL is created and `DATABASE_URL` is set:
 ```bash
 npm run deploy:db
 ```
+
+If admin login fails after deployment, run:
+
+```bash
+npm run deploy:db
+npm run verify:admins
+```
+
+`deploy:db` is idempotent. It reapplies pending Prisma migrations and reseeds the two admin password hashes from the current `ADMIN_ONE_*` and `ADMIN_TWO_*` environment variables.
 
 Expected seed result:
 

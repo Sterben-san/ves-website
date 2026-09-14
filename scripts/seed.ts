@@ -64,6 +64,13 @@ async function main() {
       role: "admin"
     });
   }
+  await prisma.admin.deleteMany({
+    where: {
+      email: {
+        notIn: adminInputs.map((input) => input.email!.toLowerCase())
+      }
+    }
+  });
 
   for (const slot of sectionSlots) {
     const existing = await media.findBySectionKey(slot.sectionKey);

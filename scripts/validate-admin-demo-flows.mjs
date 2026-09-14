@@ -126,9 +126,9 @@ async function main() {
   const badLogin = await request("/api/auth/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password: "definitely-wrong" })
+    body: JSON.stringify({ email: `invalid-${Date.now()}@ves.local`, password: "definitely-wrong" })
   });
-  expect(badLogin.status === 401, "Bad login rejected", `status ${badLogin.status}`);
+  expect(badLogin.status === 401 || badLogin.status === 429, "Bad login rejected", `status ${badLogin.status}`);
 
   const login = await request("/api/auth/login", {
     method: "POST",

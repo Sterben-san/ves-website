@@ -3,6 +3,7 @@ node_modules
 coverage
 .env
 .env.local
+hostinger.env
 dist
 *.log
 *.tsbuildinfo
