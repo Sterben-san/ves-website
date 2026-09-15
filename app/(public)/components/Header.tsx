@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { type MouseEvent, useEffect, useState } from "react";
 
 const links = [
   ["About", "/#about"],
@@ -27,6 +28,8 @@ export function Header({
   showSocial?: boolean;
 }) {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
   const visibleLinks = links.filter(
     ([label]) =>
       (label !== "News" || showNews) &&
@@ -34,6 +37,58 @@ export function Header({
       (label !== "Certifications" || showCertifications) &&
       (label !== "Social" || showSocial)
   );
+
+  const scrollToSection = (targetId: string) => {
+    const target = document.getElementById(targetId);
+    if (!target) return false;
+
+    const headerHeight = document.querySelector("header")?.getBoundingClientRect().height ?? 80;
+    const targetTop = target.getBoundingClientRect().top + window.scrollY - headerHeight - 12;
+    window.scrollTo({ top: Math.max(0, targetTop), behavior: "smooth" });
+    return true;
+  };
+
+  const handleSectionClick = (event: MouseEvent<HTMLAnchorElement>, label: string, href: string) => {
+    setOpen(false);
+
+    if (!href.startsWith("/#")) return;
+
+    const targetId = href.slice(2);
+    const selector = `#${CSS.escape(targetId)}`;
+    const targetCount = document.querySelectorAll(selector).length;
+    const targetFound = targetCount > 0;
+
+    if (process.env.NODE_ENV !== "production") {
+      console.info("[header-nav-validation]", JSON.stringify({
+        label,
+        href,
+        pathname,
+        targetId,
+        targetFound,
+        targetCount,
+        scrollY: Math.round(window.scrollY)
+      }));
+    }
+
+    event.preventDefault();
+
+    if (pathname === "/" && targetFound) {
+      scrollToSection(targetId);
+      window.history.pushState(null, "", `#${targetId}`);
+      return;
+    }
+
+    router.push(href);
+  };
+
+  useEffect(() => {
+    if (pathname !== "/" || !window.location.hash) return;
+
+    const targetId = window.location.hash.slice(1);
+    window.requestAnimationFrame(() => {
+      scrollToSection(targetId);
+    });
+  }, [pathname]);
 
   return (
     <header className="sticky left-0 right-0 top-0 z-50 border-b border-ves-leaf/25 bg-[rgba(8,11,10,0.76)] text-ves-paper shadow-[0_10px_30px_rgba(8,11,10,0.24)] backdrop-blur-xl">
@@ -54,6 +109,7 @@ export function Header({
               className="focus-ring relative opacity-85 transition after:absolute after:-bottom-2 after:left-0 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:bg-ves-lime after:transition hover:text-ves-lime hover:after:scale-x-100"
               href={href}
               key={href}
+              onClick={(event) => handleSectionClick(event, label, href)}
             >
               {label}
             </a>
@@ -82,7 +138,7 @@ export function Header({
       <div id="ves-mobile-menu" className={`${open ? "block" : "hidden"} border-t border-ves-leaf/25 bg-[rgba(8,11,10,0.94)] px-4 pb-5 backdrop-blur-xl md:hidden`}>
         <div className="mx-auto grid max-w-[1200px] gap-1 pt-3">
           {visibleLinks.map(([label, href]) => (
-            <a className="focus-ring rounded px-2 py-3 font-semibold" href={href} key={href} onClick={() => setOpen(false)}>
+            <a className="focus-ring rounded px-2 py-3 font-semibold" href={href} key={href} onClick={(event) => handleSectionClick(event, label, href)}>
               {label}
             </a>
           ))}

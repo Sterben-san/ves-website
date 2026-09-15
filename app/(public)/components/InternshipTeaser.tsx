@@ -5,7 +5,7 @@ export function InternshipTeaser({ internships }: { internships: InternshipUpdat
   if (internships.length === 0) return null;
 
   return (
-    <section id="internships" className="bg-ves-mist">
+    <section id="internship-list" className="bg-ves-mist">
       <div className="section-shell">
         <div className="grid gap-6 rounded border border-ves-leaf/20 bg-ves-cream p-8 shadow-soft md:grid-cols-[1.2fr_0.8fr] md:p-10">
           <div>
