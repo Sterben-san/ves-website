@@ -15,16 +15,17 @@ import { SlidingIconRail } from "./components/SlidingIconRail";
 import { Stats } from "./components/Stats";
 import { Team } from "./components/Team";
 import { InternshipNoticeBar } from "./components/InternshipNoticeBar";
-import { getActiveInternships, getActiveTeamMembers, getFieldProcessSteps, getNewsSectionCopy, getPinnedAnnouncement, getPublishedAnnouncements, getPublishedCertificates, getPublishedHomepageNewsItems, getPublishedProjects, getSocialLinks } from "@/lib/content";
+import { getActiveInternships, getActiveTeamMembers, getFieldProcessSteps, getHomepageSectionCopies, getNewsSectionCopy, getPinnedAnnouncement, getPublishedAnnouncements, getPublishedCertificates, getPublishedHomepageNewsItems, getPublishedProjects, getSocialLinks } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [media, announcements, homepageNews, newsSectionCopy, pinnedAnnouncement, internships, socialLinks, teamMembers, featuredProjects, fieldProcessSteps, certificates] = await Promise.all([
+  const [media, announcements, homepageNews, newsSectionCopy, sectionCopies, pinnedAnnouncement, internships, socialLinks, teamMembers, featuredProjects, fieldProcessSteps, certificates] = await Promise.all([
     getMediaMap(),
     getPublishedAnnouncements(undefined, 1),
     getPublishedHomepageNewsItems(),
     getNewsSectionCopy(),
+    getHomepageSectionCopies(),
     getPinnedAnnouncement(),
     getActiveInternships(),
     getSocialLinks(),
@@ -39,19 +40,19 @@ export default async function HomePage() {
       <Header showNews={announcements.total > 0 || homepageNews.length > 0} showInternships={internships.length > 0} showCertifications={certificates.length > 0} showSocial={socialLinks.length > 0} />
       <main>
         {pinnedAnnouncement ? <AnnouncementHero announcement={pinnedAnnouncement} /> : null}
-        <Hero media={media} />
+        <Hero copy={sectionCopies["home.hero"]} media={media} />
         <SlidingIconRail />
-        <InternshipNoticeBar internships={internships.slice(0, 2)} />
+        <InternshipNoticeBar copy={sectionCopies["home.internships"]} internships={internships.slice(0, 2)} />
         <Stats />
-        <Journey steps={fieldProcessSteps} />
-        <About media={media} />
-        <Certifications certificates={certificates} />
-        <Solutions projects={featuredProjects} />
+        <Journey copy={sectionCopies["home.journey"]} steps={fieldProcessSteps} />
+        <About copy={sectionCopies["home.about"]} media={media} />
+        <Certifications certificates={certificates} copy={sectionCopies["home.certifications"]} />
+        <Solutions copy={sectionCopies["home.solutions"]} projects={featuredProjects} />
         <LatestUpdates items={homepageNews.slice(0, newsSectionCopy.maxItems)} copy={newsSectionCopy} />
-        <CompanyStory />
-        <Team members={teamMembers} />
-        <SocialShowcase links={socialLinks} />
-        <CTA />
+        <CompanyStory copy={sectionCopies["home.companyModel"]} />
+        <Team copy={sectionCopies["home.team"]} members={teamMembers} />
+        <SocialShowcase copy={sectionCopies["home.social"]} links={socialLinks} />
+        <CTA copy={sectionCopies["home.contact"]} />
       </main>
       <Footer media={media} />
     </>

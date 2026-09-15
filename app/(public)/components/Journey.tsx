@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import type { SectionCopy } from "@/server/domain/entities";
 
 const markerSize = 76;
 
@@ -10,7 +11,7 @@ type JourneyStep = {
   copy: string;
 };
 
-export function Journey({ steps }: { steps: JourneyStep[] }) {
+export function Journey({ copy, steps }: { copy?: SectionCopy; steps: JourneyStep[] }) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const railRef = useRef<HTMLDivElement | null>(null);
   const stepRefs = useRef<Array<HTMLDivElement | null>>([]);
@@ -90,12 +91,15 @@ export function Journey({ steps }: { steps: JourneyStep[] }) {
     };
   }, [steps.length]);
 
+  if (copy?.visible === false) return null;
+
   return (
     <section id="journey" className="bg-ves-field" ref={sectionRef}>
       <div className="section-shell max-w-[1000px]">
         <div className="mb-12">
-          <p className="eyebrow">Field Process</p>
-          <h2 className="mt-4 max-w-3xl text-3xl font-extrabold leading-[1.08] text-ves-text md:text-5xl">From municipal problem to installed automation.</h2>
+          <p className="eyebrow">{copy?.eyebrow || "Field Process"}</p>
+          <h2 className="mt-4 max-w-3xl text-3xl font-extrabold leading-[1.08] text-ves-text md:text-5xl">{copy?.title || "From municipal problem to installed automation."}</h2>
+          {copy?.body ? <p className="mt-4 max-w-3xl text-base font-semibold leading-7 text-ves-text/68 md:text-lg">{copy.body}</p> : null}
         </div>
         <div className="relative pb-24" ref={railRef}>
           <div

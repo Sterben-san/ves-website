@@ -1,6 +1,9 @@
 import { companyStory } from "@/lib/siteContent";
+import type { SectionCopy } from "@/server/domain/entities";
 
-export function CompanyStory() {
+export function CompanyStory({ copy }: { copy?: SectionCopy }) {
+  if (copy?.visible === false) return null;
+
   const modelHighlights = [
     ["Problem", companyStory.problem],
     ["Solution", companyStory.solution],
@@ -13,13 +16,13 @@ export function CompanyStory() {
       <div className="section-shell">
         <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
           <div>
-            <p className="eyebrow text-ves-lime">Company Model</p>
+            <p className="eyebrow text-ves-lime">{copy?.eyebrow || "Company Model"}</p>
             <h2 className="mt-4 text-3xl font-extrabold leading-[1.08] text-ves-paper md:text-5xl">
-              Built as a practical public-infrastructure partner
+              {copy?.title || "Built as a practical public-infrastructure partner"}
             </h2>
           </div>
           <p className="text-base leading-8 text-ves-paper/76 md:text-lg">
-            {companyStory.theme}: automatic streetlight control, field installation, and long-term service support brought together for rural and district-level operating conditions.
+            {copy?.body || `${companyStory.theme}: automatic streetlight control, field installation, and long-term service support brought together for rural and district-level operating conditions.`}
           </p>
         </div>
 

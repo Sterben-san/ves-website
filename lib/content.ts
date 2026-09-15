@@ -1,6 +1,6 @@
 import { createContainer } from "@/server/config/container";
 import { defaultFieldProcessSteps } from "@/server/application/fieldProcessUseCases";
-import { defaultNewsSectionCopy } from "@/server/application/sectionCopyUseCases";
+import { defaultNewsSectionCopy, editableSectionCopies } from "@/server/application/sectionCopyUseCases";
 import type { Announcement, AnnouncementKind, Certificate, FieldProcessStep, HomepageNewsItem, InternshipUpdate, Project, SectionCopy, SocialLink, TeamMember } from "@/server/domain/entities";
 
 const demoDate = new Date("2026-09-12T00:00:00.000Z");
@@ -25,6 +25,25 @@ export async function getNewsSectionCopy() {
     return {
       ...defaultNewsSectionCopy,
       id: defaultNewsSectionCopy.sectionKey,
+      updatedAt: demoDate
+    } as SectionCopy;
+  }
+}
+
+export async function getHomepageSectionCopies() {
+  const entries = await Promise.all(editableSectionCopies.map(async (copy) => [copy.sectionKey, await getSectionCopy(copy.sectionKey)] as const));
+  return Object.fromEntries(entries) as Record<string, SectionCopy>;
+}
+
+export async function getSectionCopy(sectionKey: string) {
+  try {
+    return await createContainer().getSectionCopy.execute(sectionKey);
+  } catch (error) {
+    logContentFetchFailure(`section-copy:${sectionKey}`, error);
+    const fallback = editableSectionCopies.find((copy) => copy.sectionKey === sectionKey) ?? defaultNewsSectionCopy;
+    return {
+      ...fallback,
+      id: sectionKey,
       updatedAt: demoDate
     } as SectionCopy;
   }

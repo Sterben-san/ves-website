@@ -1,10 +1,10 @@
 import Link from "next/link";
-import type { InternshipUpdate } from "@/server/domain/entities";
+import type { InternshipUpdate, SectionCopy } from "@/server/domain/entities";
 
-export function InternshipNoticeBar({ internships }: { internships: InternshipUpdate[] }) {
-  const active = internships.slice(0, 2);
+export function InternshipNoticeBar({ copy, internships }: { copy?: SectionCopy; internships: InternshipUpdate[] }) {
+  const active = internships.slice(0, copy?.maxItems ?? 2);
 
-  if (active.length === 0) return null;
+  if (active.length === 0 || copy?.visible === false) return null;
 
   return (
     <section id="internships" className="border-y border-ves-leaf/25 bg-ves-black text-ves-paper" aria-label="Active VES internship openings">
@@ -12,11 +12,12 @@ export function InternshipNoticeBar({ internships }: { internships: InternshipUp
         <div className="rounded border border-ves-leaf/30 bg-ves-deep p-5 shadow-soft">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-ves-lime">Internships</p>
-              <h2 className="mt-2 text-2xl font-extrabold leading-[1.12] text-ves-paper">Active openings</h2>
+              <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-ves-lime">{copy?.eyebrow || "Internships"}</p>
+              <h2 className="mt-2 text-2xl font-extrabold leading-[1.12] text-ves-paper">{copy?.title || "Active openings"}</h2>
+              {copy?.body ? <p className="mt-2 max-w-2xl text-sm font-semibold leading-6 text-ves-paper/65">{copy.body}</p> : null}
             </div>
-            <Link className="focus-ring rounded bg-ves-leaf px-3 py-2 text-xs font-extrabold uppercase tracking-[0.08em] text-white" href="/internships">
-              Openings
+            <Link className="focus-ring rounded bg-ves-leaf px-3 py-2 text-xs font-extrabold uppercase tracking-[0.08em] text-white" href={copy?.ctaHref || "/internships"}>
+              {copy?.ctaLabel || "Openings"}
             </Link>
           </div>
           <div className="mt-4 grid gap-3 md:grid-cols-2">

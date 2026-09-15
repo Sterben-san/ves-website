@@ -15,6 +15,128 @@ export const defaultNewsSectionCopy: Omit<SectionCopy, "id" | "updatedAt"> = {
   maxItems: 8
 };
 
+export const editableSectionCopies: Array<Omit<SectionCopy, "id" | "updatedAt">> = [
+  {
+    sectionKey: "home.hero",
+    eyebrow: "Streetlight Automation | Est. Dec 2024",
+    title: "Innovating for a Sustainable Future",
+    body: "Streetlight automation systems that conserve energy, reduce public costs, discourage illegal electricity usage, and enhance rural infrastructure.",
+    ctaLabel: "Contact VES",
+    ctaHref: "#contact",
+    visible: true,
+    theme: "dark",
+    animationDirection: "right",
+    animationSeconds: 46,
+    maxItems: 8
+  },
+  {
+    sectionKey: "home.journey",
+    eyebrow: "Field Process",
+    title: "From municipal problem to installed automation.",
+    body: "The VES process moves from site review and local approvals to manufacturing, installation, monitoring, and accountable support.",
+    visible: true,
+    theme: "light",
+    animationDirection: "right",
+    animationSeconds: 46,
+    maxItems: 8
+  },
+  {
+    sectionKey: "home.about",
+    eyebrow: "About",
+    title: "Practical infrastructure technology for local governments and rural communities",
+    body: "VES was founded to solve a municipal problem observed directly in the field: streetlights running around the clock, wasting electricity, burning out hardware, and creating recurring repair costs for local bodies.",
+    visible: true,
+    theme: "dark",
+    animationDirection: "right",
+    animationSeconds: 46,
+    maxItems: 8
+  },
+  {
+    sectionKey: "home.certifications",
+    eyebrow: "Certifications",
+    title: "Verified records, quick to inspect.",
+    body: "Tap any certificate preview to open the full certifications page at the matching record.",
+    visible: true,
+    theme: "green",
+    animationDirection: "right",
+    animationSeconds: 46,
+    maxItems: 8
+  },
+  {
+    sectionKey: "home.solutions",
+    eyebrow: "Solutions & Field Work",
+    title: "One operating story: what VES builds and where it works",
+    body: "VES brings control boxes, streetlight automation, high mast lighting, and field support into one delivery model for government bodies, rural communities, sand reaches, roads, and consumer automation needs.",
+    visible: true,
+    theme: "light",
+    animationDirection: "right",
+    animationSeconds: 46,
+    maxItems: 8
+  },
+  defaultNewsSectionCopy,
+  {
+    sectionKey: "home.companyModel",
+    eyebrow: "Company Model",
+    title: "Built as a practical public-infrastructure partner",
+    body: "Automatic streetlight control, field installation, and long-term service support brought together for rural and district-level operating conditions.",
+    visible: true,
+    theme: "dark",
+    animationDirection: "right",
+    animationSeconds: 46,
+    maxItems: 8
+  },
+  {
+    sectionKey: "home.team",
+    eyebrow: "Team",
+    title: "Contact cards for the people behind VES",
+    body: "Reach the active VES team for field projects, operations, development, and public-lighting conversations.",
+    visible: true,
+    theme: "light",
+    animationDirection: "right",
+    animationSeconds: 46,
+    maxItems: 8
+  },
+  {
+    sectionKey: "home.social",
+    eyebrow: "Follow",
+    title: "Follow VES public posts.",
+    body: "Explore public Instagram and LinkedIn posts shared by the VES team.",
+    visible: true,
+    theme: "light",
+    animationDirection: "right",
+    animationSeconds: 46,
+    maxItems: 4
+  },
+  {
+    sectionKey: "home.contact",
+    eyebrow: "Contact",
+    title: "Evaluate streetlight automation with Vishwakarma",
+    body: "Tell us about your streetlight cluster, village, road, sand reach, or public-lighting challenge and we will help evaluate control-box fit, deployment scope, and service support.",
+    ctaLabel: "Contact VES",
+    ctaHref: "mailto:vessolutions8328@gmail.com",
+    visible: true,
+    theme: "light",
+    animationDirection: "right",
+    animationSeconds: 46,
+    maxItems: 8
+  },
+  {
+    sectionKey: "home.internships",
+    eyebrow: "Internships",
+    title: "Active openings",
+    body: "Current internship opportunities and application links published by the VES admin team.",
+    ctaLabel: "Openings",
+    ctaHref: "/internships",
+    visible: true,
+    theme: "dark",
+    animationDirection: "right",
+    animationSeconds: 46,
+    maxItems: 2
+  }
+];
+
+export const editableSectionCopyMap = new Map(editableSectionCopies.map((copy) => [copy.sectionKey, copy]));
+
 export class GetSectionCopyUseCase {
   constructor(private readonly sectionCopy: ISectionCopyRepository) {}
 
@@ -60,11 +182,12 @@ export type SectionCopyInput = {
 };
 
 function fallbackSectionCopy(sectionKey: string): SectionCopy {
-  if (sectionKey !== defaultNewsSectionCopy.sectionKey) {
+  const fallback = editableSectionCopyMap.get(sectionKey);
+  if (!fallback) {
     throw new Error(`Unknown section copy key: ${sectionKey}`);
   }
   return {
-    ...defaultNewsSectionCopy,
+    ...fallback,
     id: sectionKey,
     updatedAt: new Date(0)
   };

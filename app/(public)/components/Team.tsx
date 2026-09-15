@@ -1,16 +1,16 @@
 import Image from "next/image";
-import type { TeamMember, TeamSocialPlatform } from "@/server/domain/entities";
+import type { SectionCopy, TeamMember, TeamSocialPlatform } from "@/server/domain/entities";
 
-export function Team({ members }: { members: TeamMember[] }) {
-  if (members.length === 0) return null;
+export function Team({ copy, members }: { copy?: SectionCopy; members: TeamMember[] }) {
+  if (members.length === 0 || copy?.visible === false) return null;
 
   return (
     <section id="team" className="bg-ves-field">
       <div className="section-shell">
-        <p className="eyebrow">Team</p>
-        <h2 className="mt-4 text-3xl font-extrabold leading-[1.08] text-ves-text md:text-5xl">Contact cards for the people behind VES</h2>
+        <p className="eyebrow">{copy?.eyebrow || "Team"}</p>
+        <h2 className="mt-4 text-3xl font-extrabold leading-[1.08] text-ves-text md:text-5xl">{copy?.title || "Contact cards for the people behind VES"}</h2>
         <p className="mt-4 max-w-3xl text-base leading-8 text-ves-text/70 md:text-lg">
-          Reach the active VES team for field projects, operations, development, and public-lighting conversations.
+          {copy?.body || "Reach the active VES team for field projects, operations, development, and public-lighting conversations."}
         </p>
         <div className="mt-12 grid gap-5 md:grid-cols-3">
           {members.map((member) => (

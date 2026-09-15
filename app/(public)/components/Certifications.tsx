@@ -1,9 +1,9 @@
 import Image from "next/image";
 import type { CSSProperties } from "react";
-import type { Certificate } from "@/server/domain/entities";
+import type { Certificate, SectionCopy } from "@/server/domain/entities";
 
-export function Certifications({ certificates }: { certificates: Certificate[] }) {
-  if (certificates.length === 0) return null;
+export function Certifications({ certificates, copy }: { certificates: Certificate[]; copy?: SectionCopy }) {
+  if (certificates.length === 0 || copy?.visible === false) return null;
 
   const marqueeItems = [...certificates, ...certificates];
   const certificateGap = certificates.length <= 3 ? 112 : certificates.length <= 6 ? 68 : 34;
@@ -13,13 +13,13 @@ export function Certifications({ certificates }: { certificates: Certificate[] }
       <div className="section-shell">
         <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
           <div>
-            <p className="eyebrow text-ves-lime">Certifications</p>
+            <p className="eyebrow text-ves-lime">{copy?.eyebrow || "Certifications"}</p>
             <h2 className="mt-4 text-3xl font-extrabold leading-[1.08] text-white md:text-5xl">
-              Verified records, quick to inspect.
+              {copy?.title || "Verified records, quick to inspect."}
             </h2>
           </div>
           <p className="text-base leading-8 text-ves-paper/72 md:text-lg">
-            Tap any certificate preview to open the full certifications page at the matching record.
+            {copy?.body || "Tap any certificate preview to open the full certifications page at the matching record."}
           </p>
         </div>
 
