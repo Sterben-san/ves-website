@@ -1,6 +1,6 @@
 import { createContainer } from "@/server/config/container";
 import { defaultFieldProcessSteps } from "@/server/application/fieldProcessUseCases";
-import { defaultNewsSectionCopy, editableSectionCopies } from "@/server/application/sectionCopyUseCases";
+import { defaultNewsSectionCopy, editableSectionCopies, heroStatSectionKeys } from "@/server/application/sectionCopyUseCases";
 import type { Announcement, AnnouncementKind, Certificate, FieldProcessStep, HomepageNewsItem, InternshipUpdate, Project, SectionCopy, SocialLink, TeamMember } from "@/server/domain/entities";
 
 const demoDate = new Date("2026-09-12T00:00:00.000Z");
@@ -34,6 +34,8 @@ export async function getHomepageSectionCopies() {
   const entries = await Promise.all(editableSectionCopies.map(async (copy) => [copy.sectionKey, await getSectionCopy(copy.sectionKey)] as const));
   return Object.fromEntries(entries) as Record<string, SectionCopy>;
 }
+
+export { heroStatSectionKeys };
 
 export async function getSectionCopy(sectionKey: string) {
   try {

@@ -15,7 +15,7 @@ import { SlidingIconRail } from "./components/SlidingIconRail";
 import { Stats } from "./components/Stats";
 import { Team } from "./components/Team";
 import { InternshipNoticeBar } from "./components/InternshipNoticeBar";
-import { getActiveInternships, getActiveTeamMembers, getFieldProcessSteps, getHomepageSectionCopies, getNewsSectionCopy, getPinnedAnnouncement, getPublishedAnnouncements, getPublishedCertificates, getPublishedHomepageNewsItems, getPublishedProjects, getSocialLinks } from "@/lib/content";
+import { getActiveInternships, getActiveTeamMembers, getFieldProcessSteps, getHomepageSectionCopies, getNewsSectionCopy, getPinnedAnnouncement, getPublishedAnnouncements, getPublishedCertificates, getPublishedHomepageNewsItems, getPublishedProjects, getSocialLinks, heroStatSectionKeys } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
 
@@ -34,6 +34,7 @@ export default async function HomePage() {
     getFieldProcessSteps(),
     getPublishedCertificates()
   ]);
+  const heroStats = heroStatSectionKeys.map((sectionKey) => sectionCopies[sectionKey]).filter(Boolean);
 
   return (
     <>
@@ -43,7 +44,7 @@ export default async function HomePage() {
         <Hero copy={sectionCopies["home.hero"]} media={media} />
         <SlidingIconRail />
         <InternshipNoticeBar copy={sectionCopies["home.internships"]} internships={internships.slice(0, 2)} />
-        <Stats />
+        <Stats stats={heroStats} />
         <Journey copy={sectionCopies["home.journey"]} steps={fieldProcessSteps} />
         <About copy={sectionCopies["home.about"]} media={media} />
         <Certifications certificates={certificates} copy={sectionCopies["home.certifications"]} />

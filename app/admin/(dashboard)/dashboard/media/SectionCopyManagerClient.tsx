@@ -5,6 +5,8 @@ import type { SectionCopy } from "@/server/domain/entities";
 import { adminFetch } from "../../_components/adminFetch";
 import { useToast } from "../../_components/Toast";
 
+const heroStatSectionKeys = ["home.stat.established", "home.stat.billReduction", "home.stat.controlUnit", "home.stat.warranty"];
+
 export type AdminSectionCopy = Omit<SectionCopy, "updatedAt"> & {
   ctaLabel: string;
   ctaHref: string;
@@ -15,6 +17,10 @@ type Draft = Pick<AdminSectionCopy, "eyebrow" | "title" | "body" | "ctaLabel" | 
 
 const sectionLabels: Record<string, string> = {
   "home.hero": "Hero",
+  "home.stat.established": "Established Card",
+  "home.stat.billReduction": "Bill Reduction Card",
+  "home.stat.controlUnit": "Control Unit Card",
+  "home.stat.warranty": "Warranty Card",
   "home.internships": "Internships Bar",
   "home.journey": "Field Process",
   "home.about": "About",
@@ -28,6 +34,9 @@ const sectionLabels: Record<string, string> = {
 };
 
 export function SectionCopyManagerClient({ initialCopies }: { initialCopies: AdminSectionCopy[] }) {
+  const statCopies = heroStatSectionKeys.map((key) => initialCopies.find((copy) => copy.sectionKey === key)).filter((copy): copy is AdminSectionCopy => Boolean(copy));
+  const sectionCopies = initialCopies.filter((copy) => !heroStatSectionKeys.includes(copy.sectionKey));
+
   return (
     <section className="mt-10">
       <div className="border-b border-slate-200 pb-4">
@@ -37,12 +46,107 @@ export function SectionCopyManagerClient({ initialCopies }: { initialCopies: Adm
           These controls update the text blocks used across the public homepage. Empty public data sections still stay hidden until their content is published or active.
         </p>
       </div>
+      {statCopies.length > 0 ? <HeroStatCardsEditor initialCopies={statCopies} /> : null}
       <div className="mt-5 grid gap-4 xl:grid-cols-2">
-        {initialCopies.map((copy) => (
+        {sectionCopies.map((copy) => (
           <SectionCopyCard initialCopy={copy} key={copy.sectionKey} />
         ))}
       </div>
     </section>
+  );
+}
+
+function HeroStatCardsEditor({ initialCopies }: { initialCopies: AdminSectionCopy[] }) {
+  return (
+    <div className="mt-5 rounded border border-ves-leaf/20 bg-ves-cream p-5 shadow-sm">
+      <div className="flex flex-wrap items-end justify-between gap-3 border-b border-ves-leaf/15 pb-4">
+        <div>
+          <p className="text-xs font-black uppercase tracking-[0.16em] text-ves-leaf">Hero Stat Cards</p>
+          <h3 className="mt-2 text-xl font-black text-slate-950">Cards below the opening hero</h3>
+        </div>
+        <p className="max-w-xl text-sm font-semibold leading-6 text-slate-500">
+          Edit the four small cards under the first screen. The value is the large text; the label is the smaller explanatory text.
+        </p>
+      </div>
+      <div className="mt-4 grid gap-3 lg:grid-cols-4">
+        {initialCopies.map((copy) => (
+          <HeroStatCard initialCopy={copy} key={copy.sectionKey} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function HeroStatCard({ initialCopy }: { initialCopy: AdminSectionCopy }) {
+  const [draft, setDraft] = useState({
+    eyebrow: initialCopy.eyebrow || "Hero Stat",
+    title: initialCopy.title,
+    body: initialCopy.body,
+    ctaLabel: initialCopy.ctaLabel ?? "",
+    ctaHref: initialCopy.ctaHref ?? "",
+    visible: initialCopy.visible,
+    theme: initialCopy.theme,
+    animationDirection: initialCopy.animationDirection,
+    animationSeconds: initialCopy.animationSeconds,
+    maxItems: initialCopy.maxItems
+  });
+  const [saving, setSaving] = useState(false);
+  const toast = useToast();
+
+  async function save(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setSaving(true);
+    try {
+      const response = await adminFetch(`/api/admin/section-copy/${encodeURIComponent(initialCopy.sectionKey)}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(draft)
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error ?? "Unable to save stat card.");
+      setDraft({
+        eyebrow: payload.copy.eyebrow,
+        title: payload.copy.title,
+        body: payload.copy.body,
+        ctaLabel: payload.copy.ctaLabel ?? "",
+        ctaHref: payload.copy.ctaHref ?? "",
+        visible: payload.copy.visible,
+        theme: payload.copy.theme,
+        animationDirection: payload.copy.animationDirection,
+        animationSeconds: payload.copy.animationSeconds,
+        maxItems: payload.copy.maxItems
+      });
+      toast({ title: "Hero stat saved", body: sectionLabels[initialCopy.sectionKey] ?? initialCopy.sectionKey, variant: "success" });
+    } catch (error) {
+      toast({ title: "Save failed", body: error instanceof Error ? error.message : "Try again.", variant: "error" });
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <form className="rounded border border-ves-leaf/15 bg-white p-4 shadow-sm" onSubmit={save}>
+      <div className="flex items-start justify-between gap-3">
+        <p className="text-xs font-black uppercase tracking-[0.12em] text-ves-leaf">{sectionLabels[initialCopy.sectionKey] ?? "Stat Card"}</p>
+        <label className="flex items-center gap-2 text-xs font-black text-slate-600">
+          <input checked={draft.visible} type="checkbox" onChange={(event) => setDraft((current) => ({ ...current, visible: event.target.checked }))} />
+          Show
+        </label>
+      </div>
+      <div className="mt-4 grid gap-3">
+        <label className="grid gap-1 text-sm font-black text-slate-700">
+          Value
+          <input className="focus-ring rounded border border-slate-200 px-3 py-2 font-semibold" maxLength={120} required value={draft.title} onChange={(event) => setDraft((current) => ({ ...current, title: event.target.value }))} />
+        </label>
+        <label className="grid gap-1 text-sm font-black text-slate-700">
+          Label
+          <textarea className="focus-ring min-h-20 rounded border border-slate-200 px-3 py-2 font-semibold leading-6" maxLength={260} required value={draft.body} onChange={(event) => setDraft((current) => ({ ...current, body: event.target.value }))} />
+        </label>
+        <button className="focus-ring rounded bg-ves-ink px-4 py-2 text-sm font-black text-white disabled:opacity-50" disabled={saving}>
+          {saving ? "Saving..." : "Save Card"}
+        </button>
+      </div>
+    </form>
   );
 }
 

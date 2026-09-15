@@ -15,6 +15,55 @@ export const defaultNewsSectionCopy: Omit<SectionCopy, "id" | "updatedAt"> = {
   maxItems: 8
 };
 
+export const heroStatSectionCopies: Array<Omit<SectionCopy, "id" | "updatedAt">> = [
+  {
+    sectionKey: "home.stat.established",
+    eyebrow: "Hero Stat",
+    title: "Dec 2024",
+    body: "Established",
+    visible: true,
+    theme: "dark",
+    animationDirection: "right",
+    animationSeconds: 46,
+    maxItems: 1
+  },
+  {
+    sectionKey: "home.stat.billReduction",
+    eyebrow: "Hero Stat",
+    title: "Up to 50%",
+    body: "Electricity-bill reduction potential",
+    visible: true,
+    theme: "dark",
+    animationDirection: "right",
+    animationSeconds: 46,
+    maxItems: 1
+  },
+  {
+    sectionKey: "home.stat.controlUnit",
+    eyebrow: "Hero Stat",
+    title: "Rs. 3,800",
+    body: "Control-unit cost model",
+    visible: true,
+    theme: "dark",
+    animationDirection: "right",
+    animationSeconds: 46,
+    maxItems: 1
+  },
+  {
+    sectionKey: "home.stat.warranty",
+    eyebrow: "Hero Stat",
+    title: "1 year",
+    body: "Service warranty",
+    visible: true,
+    theme: "dark",
+    animationDirection: "right",
+    animationSeconds: 46,
+    maxItems: 1
+  }
+];
+
+export const heroStatSectionKeys = heroStatSectionCopies.map((copy) => copy.sectionKey);
+
 export const editableSectionCopies: Array<Omit<SectionCopy, "id" | "updatedAt">> = [
   {
     sectionKey: "home.hero",
@@ -29,6 +78,7 @@ export const editableSectionCopies: Array<Omit<SectionCopy, "id" | "updatedAt">>
     animationSeconds: 46,
     maxItems: 8
   },
+  ...heroStatSectionCopies,
   {
     sectionKey: "home.journey",
     eyebrow: "Field Process",
