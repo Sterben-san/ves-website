@@ -2,7 +2,13 @@ import type { Project, SectionCopy } from "@/server/domain/entities";
 import { SolutionsProjectExplorer } from "./SolutionsProjectExplorer";
 
 export function Solutions({ copy, projects }: { copy?: SectionCopy; projects: Project[] }) {
-  if (projects.length === 0 || copy?.visible === false) return null;
+  if (copy?.visible === false) return null;
+
+  console.info("[solutions-render-validation]", {
+    publishedProjectCount: projects.length,
+    visible: true,
+    hasAnchorTarget: true
+  });
 
   return (
     <section id="solutions" className="bg-ves-field">

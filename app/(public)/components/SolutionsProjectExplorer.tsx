@@ -6,6 +6,26 @@ export function SolutionsProjectExplorer({ projects }: { projects: Project[] }) 
   const visibleProjects = projects.slice(0, 3);
   const hasMoreProjects = projects.length > visibleProjects.length;
 
+  if (visibleProjects.length === 0) {
+    return (
+      <div className="mt-12 rounded border border-ves-leaf/20 bg-ves-cream p-8 shadow-soft md:p-10">
+        <p className="eyebrow">Project Records</p>
+        <h3 className="mt-3 text-2xl font-extrabold leading-[1.12] text-ves-text md:text-3xl">Field-work records are being prepared.</h3>
+        <p className="mt-4 max-w-2xl text-base font-medium leading-8 text-ves-text/70">
+          Published VES project cards will appear here after the admin team adds the project heading, summary, cover image, and publishing status.
+        </p>
+        <div className="mt-6 flex flex-wrap gap-3">
+          <a className="ves-button focus-ring bg-ves-leaf text-white hover:bg-ves-ink" href="#contact">
+            Discuss Deployment
+          </a>
+          <Link className="ves-button focus-ring border border-ves-leaf/25 text-ves-text hover:border-ves-leaf" href="/projects">
+            View Projects Page
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="mt-12 grid gap-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)_52px]">
