@@ -102,6 +102,15 @@ export async function getPublishedProjects(featured?: boolean) {
   }
 }
 
+export async function getPublishedProject(slug: string) {
+  try {
+    return await createContainer().getPublishedProject.execute(slug);
+  } catch (error) {
+    logContentFetchFailure(`project:${slug}`, error);
+    return null;
+  }
+}
+
 export async function getAllProjectsForAdmin() {
   try {
     return await createContainer().listAllProjectsForAdmin.execute();

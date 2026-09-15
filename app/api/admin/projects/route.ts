@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
-import { booleanField, errorResponse, json, parseOptionalUploadForm, requireAdmin } from "@/server/interfaces/http";
+import { booleanField, errorResponse, json, parseProjectUploadForm, requireAdmin } from "@/server/interfaces/http";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -11,6 +11,7 @@ const schema = z.object({
   summary: z.string().optional(),
   body: z.string().optional(),
   location: z.string().optional(),
+  mapUrl: z.string().url().optional().or(z.literal("")),
   category: z.string().optional(),
   coverUrl: z.string().url().optional().or(z.literal("")),
   coverPublicId: z.string().optional(),
@@ -32,14 +33,16 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const { container } = await requireAdmin(request);
-    const { fields, file } = await parseOptionalUploadForm(request);
+    const { fields, file, galleryFiles } = await parseProjectUploadForm(request);
     const input = schema.parse(fields);
     const project = await container.createProject.execute({
       ...input,
       coverUrl: input.coverUrl || undefined,
+      mapUrl: input.mapUrl || undefined,
       featured: booleanField(input.featured),
       published: booleanField(input.published),
-      file
+      file,
+      galleryFiles
     });
     return json({ project }, { status: 201 });
   } catch (error) {

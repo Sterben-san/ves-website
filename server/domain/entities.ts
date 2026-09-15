@@ -66,6 +66,12 @@ export interface StoredAsset {
   bytes?: number;
 }
 
+export interface ProjectImage {
+  url: string;
+  publicId: string;
+  altText?: string;
+}
+
 export interface Project {
   id: string;
   title: string;
@@ -73,9 +79,11 @@ export interface Project {
   summary: string;
   body: string;
   location?: string;
+  mapUrl?: string;
   category?: string;
   coverUrl?: string;
   coverPublicId?: string;
+  galleryImages: ProjectImage[];
   displayOrder: number;
   featured: boolean;
   published: boolean;

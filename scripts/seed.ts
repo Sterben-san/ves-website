@@ -215,11 +215,16 @@ async function main() {
   ];
 
   for (const project of initialProjects) {
+    const projectRecord = {
+      ...project,
+      mapUrl: project.location ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(project.location)}` : undefined,
+      galleryImages: []
+    };
     const existing = await projects.findBySlug(project.slug);
     if (existing) {
-      await projects.update(existing.id, project);
+      await projects.update(existing.id, projectRecord);
     } else {
-      await projects.create(project);
+      await projects.create(projectRecord);
     }
   }
 

@@ -114,6 +114,23 @@ export async function parseOptionalUploadForm(request: NextRequest) {
   };
 }
 
+export async function parseProjectUploadForm(request: NextRequest) {
+  const formData = await request.formData();
+  const fields = Object.fromEntries(
+    [...formData.entries()]
+      .filter(([key, value]) => key !== "file" && key !== "galleryFiles" && typeof value === "string")
+      .map(([key, value]) => [key, value.toString()])
+  );
+  const file = await readOptionalFile(formData.get("file"));
+  const galleryFiles: Array<{ buffer: Buffer; fileName: string; mimeType: string }> = [];
+  for (const item of formData.getAll("galleryFiles")) {
+    const file = await readOptionalFile(item);
+    if (file) galleryFiles.push(file);
+  }
+
+  return { fields, file, galleryFiles };
+}
+
 export async function parseNamedUploadForm(request: NextRequest, fileKeys: string[]) {
   const formData = await request.formData();
   const fields = Object.fromEntries(
@@ -138,6 +155,22 @@ export async function parseNamedUploadForm(request: NextRequest, fileKeys: strin
   }
 
   return { fields, files };
+}
+
+async function readOptionalFile(value: FormDataEntryValue | null) {
+  if (!(value instanceof File) || value.size === 0) {
+    return undefined;
+  }
+
+  assertUploadSize(value);
+  const buffer = Buffer.from(await value.arrayBuffer());
+  const detected = await fileTypeFromBuffer(buffer);
+
+  return {
+    buffer,
+    fileName: value.name,
+    mimeType: requireDetectedMime(detected?.mime)
+  };
 }
 
 export function booleanField(value: unknown) {

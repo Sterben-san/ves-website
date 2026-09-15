@@ -20,12 +20,16 @@ type Draft = {
   summary: string;
   body: string;
   location: string;
+  mapUrl: string;
   category: string;
   coverUrl?: string;
+  galleryImages: AdminProject["galleryImages"];
   featured: boolean;
   published: boolean;
   file?: File;
+  galleryFiles?: File[];
   removeCover?: boolean;
+  removeGalleryPublicIds?: string[];
 };
 
 const emptyDraft: Draft = {
@@ -34,7 +38,9 @@ const emptyDraft: Draft = {
   summary: "",
   body: "",
   location: "",
+  mapUrl: "",
   category: "",
+  galleryImages: [],
   featured: false,
   published: false
 };
@@ -96,11 +102,14 @@ export function ProjectDashboardClient({ initialProjects }: { initialProjects: A
       form.set("summary", draft.summary);
       form.set("body", draft.body);
       form.set("location", draft.location);
+      form.set("mapUrl", draft.mapUrl);
       form.set("category", draft.category);
       form.set("featured", String(draft.featured));
       form.set("published", String(draft.published || publishable));
       if (draft.file) form.set("file", draft.file);
+      draft.galleryFiles?.forEach((file) => form.append("galleryFiles", file));
       if (draft.removeCover) form.set("removeCover", "true");
+      if (draft.removeGalleryPublicIds?.length) form.set("removeGalleryPublicIds", JSON.stringify(draft.removeGalleryPublicIds));
 
       const response = await adminFetch(draft.id ? `/api/admin/projects/${draft.id}` : "/api/admin/projects", {
         method: draft.id ? "PATCH" : "POST",
@@ -188,8 +197,10 @@ export function ProjectDashboardClient({ initialProjects }: { initialProjects: A
       summary: row.summary,
       body: row.body,
       location: row.location ?? "",
+      mapUrl: row.mapUrl ?? "",
       category: row.category ?? "",
       coverUrl: row.coverUrl,
+      galleryImages: row.galleryImages,
       featured: row.featured,
       published: row.published
     });
@@ -198,6 +209,25 @@ export function ProjectDashboardClient({ initialProjects }: { initialProjects: A
   function chooseFile(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (file) setDraft((current) => ({ ...current, file, removeCover: false }));
+  }
+
+  function chooseGalleryFiles(event: ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(event.target.files ?? []);
+    if (files.length) setDraft((current) => ({ ...current, galleryFiles: [...(current.galleryFiles ?? []), ...files] }));
+  }
+
+  function toggleGalleryRemoval(publicId: string, checked: boolean) {
+    setDraft((current) => {
+      const currentIds = current.removeGalleryPublicIds ?? [];
+      return {
+        ...current,
+        removeGalleryPublicIds: checked ? [...new Set([...currentIds, publicId])] : currentIds.filter((id) => id !== publicId)
+      };
+    });
+  }
+
+  function removePendingGalleryFile(index: number) {
+    setDraft((current) => ({ ...current, galleryFiles: (current.galleryFiles ?? []).filter((_, itemIndex) => itemIndex !== index) }));
   }
 
   const previewUrl = draft.file ? URL.createObjectURL(draft.file) : draft.coverUrl;
@@ -231,10 +261,43 @@ export function ProjectDashboardClient({ initialProjects }: { initialProjects: A
         <Field label="Slug" value={draft.slug} onChange={(value) => setDraft((current) => ({ ...current, slug: slugify(value) }))} />
         <Field label="Category tag" value={draft.category} onChange={(value) => setDraft((current) => ({ ...current, category: value }))} />
         <Field label="Location" value={draft.location} onChange={(value) => setDraft((current) => ({ ...current, location: value }))} />
+        <Field label="Public map URL" value={draft.mapUrl} onChange={(value) => setDraft((current) => ({ ...current, mapUrl: value }))} />
         <label className="grid gap-1 text-sm font-black text-slate-700">
           Short description
           <textarea className="focus-ring min-h-24 rounded border border-slate-200 px-3 py-2 font-semibold leading-7" value={draft.summary} onChange={(event) => setDraft((current) => ({ ...current, summary: event.target.value }))} />
         </label>
+
+        <section className="rounded border border-slate-200 bg-slate-50 p-3">
+          <div className="flex flex-col gap-1">
+            <p className="text-sm font-black text-slate-700">Project gallery images</p>
+            <p className="text-xs font-semibold leading-5 text-slate-500">Upload extra field photos for the public project detail page.</p>
+          </div>
+          <input accept="image/jpeg,image/png,image/webp" className="mt-3 text-sm font-semibold" multiple type="file" onChange={chooseGalleryFiles} />
+          {draft.galleryImages.length > 0 ? (
+            <div className="mt-3 grid gap-2">
+              {draft.galleryImages.map((image) => (
+                <label className="flex items-center gap-3 rounded border border-slate-200 bg-white p-2 text-xs font-bold text-slate-600" key={image.publicId}>
+                  <span className="relative h-12 w-16 shrink-0 overflow-hidden rounded bg-slate-900">
+                    <Image src={image.url} alt={image.altText || "Project gallery image"} fill sizes="64px" className="object-cover" />
+                  </span>
+                  <span className="min-w-0 flex-1 break-all">{image.altText || image.publicId}</span>
+                  <input checked={(draft.removeGalleryPublicIds ?? []).includes(image.publicId)} type="checkbox" onChange={(event) => toggleGalleryRemoval(image.publicId, event.target.checked)} />
+                  Remove
+                </label>
+              ))}
+            </div>
+          ) : null}
+          {draft.galleryFiles?.length ? (
+            <div className="mt-3 grid gap-2">
+              {draft.galleryFiles.map((file, index) => (
+                <div className="flex items-center justify-between gap-3 rounded border border-ves-leaf/20 bg-white p-2 text-xs font-bold text-slate-600" key={`${file.name}-${index}`}>
+                  <span className="min-w-0 break-all">{file.name}</span>
+                  <button className="focus-ring rounded border border-slate-200 px-2 py-1 font-black" type="button" onClick={() => removePendingGalleryFile(index)}>Remove</button>
+                </div>
+              ))}
+            </div>
+          ) : null}
+        </section>
         <label className="grid gap-1 text-sm font-black text-slate-700">
           Full project info
           <textarea className="focus-ring min-h-36 rounded border border-slate-200 px-3 py-2 font-semibold leading-7" value={draft.body} onChange={(event) => setDraft((current) => ({ ...current, body: event.target.value }))} />

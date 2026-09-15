@@ -9,6 +9,7 @@ import type {
   HomepageNewsItem,
   InternshipUpdate,
   Project,
+  ProjectImage,
   SectionCopy,
   SectionMedia,
   SocialLink,
@@ -558,9 +559,11 @@ function toProject(doc: Prisma.ProjectGetPayload<Record<string, never>>): Projec
     summary: doc.summary,
     body: doc.body,
     location: doc.location ?? undefined,
+    mapUrl: doc.mapUrl ?? undefined,
     category: doc.category ?? undefined,
     coverUrl: doc.coverUrl ?? undefined,
     coverPublicId: doc.coverPublicId ?? undefined,
+    galleryImages: parseProjectImages(doc.galleryImages),
     displayOrder: doc.displayOrder,
     featured: doc.featured,
     published: doc.published,
@@ -693,7 +696,7 @@ function toCertificate(doc: Prisma.CertificateGetPayload<Record<string, never>>)
 }
 
 function projectToPrisma(project: Omit<Project, "id" | "createdAt" | "updatedAt">) {
-  return nullToPrisma(project);
+  return { ...nullToPrisma(project), galleryImages: project.galleryImages as unknown as Prisma.InputJsonValue };
 }
 
 function announcementToPrisma(announcement: Omit<Announcement, "id" | "createdAt" | "updatedAt">) {
@@ -721,7 +724,11 @@ function certificateToPrisma(certificate: Omit<Certificate, "id" | "createdAt" |
 }
 
 function toPrismaUpdate<T extends Record<string, unknown>>(value: T) {
-  return nullToPrisma(value);
+  const next = nullToPrisma(value);
+  if ("galleryImages" in value) {
+    return { ...next, galleryImages: value.galleryImages as unknown as Prisma.InputJsonValue };
+  }
+  return next;
 }
 
 function nullToPrisma<T extends Record<string, unknown>>(value: T) {
@@ -730,6 +737,20 @@ function nullToPrisma<T extends Record<string, unknown>>(value: T) {
 
 function isCompleteProject(project: Project) {
   return Boolean(project.title.trim() && project.slug.trim() && project.summary.trim() && project.coverUrl);
+}
+
+function parseProjectImages(value: Prisma.JsonValue): ProjectImage[] {
+  if (!Array.isArray(value)) return [];
+  return value.flatMap((item) => {
+      if (typeof item !== "object" || item === null || Array.isArray(item)) return [];
+      const record = item as Record<string, unknown>;
+      if (typeof record.url !== "string" || typeof record.publicId !== "string") return [];
+      return {
+        url: record.url,
+        publicId: record.publicId,
+        altText: typeof record.altText === "string" ? record.altText : undefined
+      } satisfies ProjectImage;
+    });
 }
 
 function isNotFound(error: unknown) {

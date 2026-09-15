@@ -6,7 +6,7 @@ import { ListFieldProcessStepsForAdminUseCase, ListFieldProcessStepsUseCase, Upd
 import { CreateHomepageNewsUseCase, DeleteHomepageNewsUseCase, ListAllHomepageNewsForAdminUseCase, ListPublishedHomepageNewsUseCase, ReorderHomepageNewsUseCase, UpdateHomepageNewsUseCase } from "@/server/application/homepageNewsUseCases";
 import { CreateInternshipUseCase, DeactivateInternshipUseCase, DeleteInternshipUseCase, ListActiveInternshipsUseCase, ListAllInternshipsForAdminUseCase, UpdateInternshipUseCase } from "@/server/application/internshipUseCases";
 import { DeleteSectionMediaUseCase, GetMediaUseCase, ListMediaUseCase, UpdateSectionAltTextUseCase, UploadSectionMediaUseCase } from "@/server/application/mediaUseCases";
-import { CreateProjectUseCase, DeleteProjectUseCase, ListAllProjectsForAdminUseCase, ListFeaturedProjectsUseCase, ListPublishedProjectsUseCase, ReorderProjectsUseCase, UpdateProjectUseCase } from "@/server/application/projectUseCases";
+import { CreateProjectUseCase, DeleteProjectUseCase, GetPublishedProjectUseCase, ListAllProjectsForAdminUseCase, ListFeaturedProjectsUseCase, ListPublishedProjectsUseCase, ReorderProjectsUseCase, UpdateProjectUseCase } from "@/server/application/projectUseCases";
 import { GetSectionCopyUseCase, UpdateSectionCopyUseCase } from "@/server/application/sectionCopyUseCases";
 import { AddSocialLinkUseCase, ListFeaturedSocialLinksUseCase, ListSocialLinksUseCase, RemoveSocialLinkUseCase, ReorderSocialLinksUseCase, ToggleFeaturedSocialLinkUseCase } from "@/server/application/socialLinkUseCases";
 import { CreateTeamMemberUseCase, DeleteTeamMemberUseCase, ListActiveTeamMembersUseCase, ListAllTeamMembersForAdminUseCase, ReorderTeamMembersUseCase, UpdateTeamMemberUseCase } from "@/server/application/teamMemberUseCases";
@@ -87,6 +87,7 @@ export function createContainer() {
     deleteCertificate: new DeleteCertificateUseCase(certificates, storage),
     reorderCertificates: new ReorderCertificatesUseCase(certificates),
     listPublishedProjects: new ListPublishedProjectsUseCase(projects),
+    getPublishedProject: new GetPublishedProjectUseCase(projects),
     listFeaturedProjects: new ListFeaturedProjectsUseCase(projects),
     listAllProjectsForAdmin: new ListAllProjectsForAdminUseCase(projects),
     createProject: new CreateProjectUseCase(projects, storage),

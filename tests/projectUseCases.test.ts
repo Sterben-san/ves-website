@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CreateProjectUseCase, DeleteProjectUseCase, ListPublishedProjectsUseCase, ReorderProjectsUseCase, UpdateProjectUseCase } from "@/server/application/projectUseCases";
+import { CreateProjectUseCase, DeleteProjectUseCase, GetPublishedProjectUseCase, ListPublishedProjectsUseCase, ReorderProjectsUseCase, UpdateProjectUseCase } from "@/server/application/projectUseCases";
 import type { Project, StoredAsset } from "@/server/domain/entities";
 import type { IProjectRepository } from "@/server/domain/repositories";
 import type { IStorageService } from "@/server/domain/services";
@@ -68,6 +68,7 @@ const completeProject = {
   summary: "Large-area illumination project.",
   body: "Full details.",
   coverUrl: "https://example.com/cover.jpg",
+  galleryImages: [],
   featured: true,
   published: true
 };
@@ -80,6 +81,18 @@ describe("project use cases", () => {
     expect(project.slug).toBe("high-mast-lighting");
     expect(project.published).toBe(true);
     expect(project.featured).toBe(true);
+  });
+
+  it("returns published project details by slug", async () => {
+    const repo = new FakeProjectRepository();
+    const project = await new CreateProjectUseCase(repo, new FakeStorage()).execute({
+      ...completeProject,
+      mapUrl: "https://maps.google.com/?q=Kothagudem"
+    });
+
+    const found = await new GetPublishedProjectUseCase(repo).execute(project.slug);
+    expect(found?.title).toBe("High Mast Lighting");
+    expect(found?.mapUrl).toContain("Kothagudem");
   });
 
   it("keeps incomplete projects hidden even when published is requested", async () => {
@@ -119,6 +132,24 @@ describe("project use cases", () => {
     await new DeleteProjectUseCase(repo, storage).execute(created.id);
     expect(await repo.findById(created.id)).toBeNull();
     expect(storage.deleted).toEqual(["project-cover"]);
+  });
+
+  it("uploads and removes gallery images", async () => {
+    const repo = new FakeProjectRepository();
+    const storage = new FakeStorage();
+    const created = await new CreateProjectUseCase(repo, storage).execute({
+      ...completeProject,
+      galleryFiles: [{ buffer: Buffer.from([1, 2, 3]), fileName: "gallery.jpg", mimeType: "image/jpeg" }]
+    });
+
+    expect(created.galleryImages).toHaveLength(1);
+
+    const updated = await new UpdateProjectUseCase(repo, storage).execute(created.id, {
+      removeGalleryPublicIds: [created.galleryImages[0].publicId]
+    });
+
+    expect(updated.galleryImages).toHaveLength(0);
+    expect(storage.deleted).toContain("project-cover");
   });
 
   it("reorders projects", async () => {

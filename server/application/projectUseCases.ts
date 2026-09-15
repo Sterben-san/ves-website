@@ -1,4 +1,4 @@
-import type { Project } from "@/server/domain/entities";
+import type { Project, ProjectImage } from "@/server/domain/entities";
 import type { IProjectRepository } from "@/server/domain/repositories";
 import type { IStorageService } from "@/server/domain/services";
 import { slugify } from "./slug";
@@ -20,6 +20,16 @@ export class ListFeaturedProjectsUseCase {
   }
 }
 
+export class GetPublishedProjectUseCase {
+  constructor(private readonly projects: IProjectRepository) {}
+
+  async execute(slug: string) {
+    const project = await this.projects.findBySlug(slug);
+    if (!project?.published || !isCompleteProject(project)) return null;
+    return project;
+  }
+}
+
 export class ListAllProjectsForAdminUseCase {
   constructor(private readonly projects: IProjectRepository) {}
 
@@ -37,16 +47,19 @@ export class CreateProjectUseCase {
   async execute(input: ProjectInput) {
     const slug = await uniqueSlug(input.slug || input.title || "draft-project", this.projects);
     const cover = input.file ? await uploadCover(this.storage, input.file, slug) : coverFromInput(input);
+    const galleryImages = [...(input.galleryImages ?? []), ...(await uploadGallery(this.storage, input.galleryFiles, slug))];
     const project = normalizeProject({
       title: optional(input.title) ?? "",
       slug,
       summary: optional(input.summary) ?? "",
       body: optional(input.body) ?? "",
       location: optional(input.location),
+      mapUrl: optional(input.mapUrl),
       category: optional(input.category),
       displayOrder: input.displayOrder ?? currentSortOrder(),
       featured: Boolean(input.featured),
       published: Boolean(input.published),
+      galleryImages,
       ...cover
     });
     return this.projects.create(project);
@@ -71,6 +84,7 @@ export class UpdateProjectUseCase {
     if (input.summary !== undefined) update.summary = optional(input.summary) ?? "";
     if (input.body !== undefined) update.body = optional(input.body) ?? "";
     if (input.location !== undefined) update.location = optional(input.location);
+    if (input.mapUrl !== undefined) update.mapUrl = optional(input.mapUrl);
     if (input.category !== undefined) update.category = optional(input.category);
     if (input.displayOrder !== undefined) update.displayOrder = input.displayOrder;
     if (input.featured !== undefined) update.featured = input.featured;
@@ -84,6 +98,17 @@ export class UpdateProjectUseCase {
       update.coverUrl = undefined;
       update.coverPublicId = undefined;
       await deleteStored(this.storage, current.coverPublicId);
+    }
+
+    if (input.removeGalleryPublicIds?.length) {
+      const removeSet = new Set(input.removeGalleryPublicIds);
+      update.galleryImages = current.galleryImages.filter((image) => !removeSet.has(image.publicId));
+      await Promise.all(input.removeGalleryPublicIds.map((publicId) => deleteStored(this.storage, publicId)));
+    }
+
+    if (input.galleryFiles?.length) {
+      const slug = update.slug ?? current.slug;
+      update.galleryImages = [...(update.galleryImages ?? current.galleryImages), ...(await uploadGallery(this.storage, input.galleryFiles, slug))];
     }
 
     const merged = normalizeProject({ ...current, ...update });
@@ -107,6 +132,7 @@ export class DeleteProjectUseCase {
       throw new Error("Project not found.");
     }
     await deleteStored(this.storage, current.coverPublicId);
+    await Promise.all(current.galleryImages.map((image) => deleteStored(this.storage, image.publicId)));
     await this.projects.delete(id);
   }
 }
@@ -125,22 +151,31 @@ export type ProjectInput = {
   summary?: string;
   body?: string;
   location?: string;
+  mapUrl?: string;
   category?: string;
   coverUrl?: string;
   coverPublicId?: string;
+  galleryImages?: ProjectImage[];
   displayOrder?: number;
   featured?: boolean;
   published?: boolean;
   file?: UploadFileInput;
+  galleryFiles?: UploadFileInput[];
+  removeGalleryPublicIds?: string[];
 };
 
 function normalizeProject(project: Omit<Project, "id" | "createdAt" | "updatedAt">): Omit<Project, "id" | "createdAt" | "updatedAt"> {
-  const complete = Boolean(project.title.trim() && project.slug.trim() && project.summary.trim() && project.coverUrl);
+  const complete = isCompleteProject(project);
   return {
     ...project,
+    galleryImages: project.galleryImages ?? [],
     featured: complete ? project.featured : false,
     published: complete ? project.published : false
   };
+}
+
+function isCompleteProject(project: Pick<Project, "title" | "slug" | "summary" | "coverUrl">) {
+  return Boolean(project.title.trim() && project.slug.trim() && project.summary.trim() && project.coverUrl);
 }
 
 async function uploadCover(storage: IStorageService, file: UploadFileInput, slug: string) {
@@ -153,6 +188,23 @@ async function uploadCover(storage: IStorageService, file: UploadFileInput, slug
     coverUrl: optimizeCloudinaryUrl(stored.url),
     coverPublicId: stored.publicId
   };
+}
+
+async function uploadGallery(storage: IStorageService, files: UploadFileInput[] = [], slug: string): Promise<ProjectImage[]> {
+  const images: ProjectImage[] = [];
+  for (const file of files) {
+    const mediaType = validateMediaUpload(file.mimeType, file.buffer.byteLength);
+    if (mediaType !== "image") {
+      throw new Error("Project gallery files must be JPG, PNG, or WebP images.");
+    }
+    const stored = await storage.upload({ ...file, folder: `ves/projects/${slug}/gallery` });
+    images.push({
+      url: optimizeCloudinaryUrl(stored.url),
+      publicId: stored.publicId,
+      altText: file.fileName
+    });
+  }
+  return images;
 }
 
 function coverFromInput(input: ProjectInput) {

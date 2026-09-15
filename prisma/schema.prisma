@@ -55,9 +55,11 @@ model Project {
   summary       String   @db.Text
   body          String   @db.Text
   location      String?
+  mapUrl        String?  @db.Text
   category      String?
   coverUrl      String?  @db.Text
   coverPublicId String?
+  galleryImages Json
   displayOrder  Int      @default(0)
   featured      Boolean  @default(false)
   published     Boolean  @default(false)

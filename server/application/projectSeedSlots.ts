@@ -8,6 +8,8 @@ export function createDraftProjectSlot(index: number, displayOrder: number): Omi
     slug: `draft-project-slot-${index}`,
     summary: "",
     body: "",
+    mapUrl: undefined,
+    galleryImages: [],
     displayOrder,
     featured: false,
     published: false
