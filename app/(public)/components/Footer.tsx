@@ -29,6 +29,7 @@ export async function Footer({ media }: { media: MediaMap }) {
             <a href={`tel:${company.phone.replace(/\s+/g, "")}`}>{company.phone}</a>
             <a href={`tel:${company.alternatePhone.replace(/\s+/g, "")}`}>{company.alternatePhone}</a>
             <p>Regd No: {company.registrationNumber}</p>
+            <p>GST No: {company.gstNumber}</p>
             <a href={company.map} rel="noreferrer" target="_blank">Open map</a>
           </div>
         </div>

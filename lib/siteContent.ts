@@ -9,6 +9,7 @@ export const company = {
   phone: "+91 83281 63817",
   alternatePhone: "+91 62814 47601",
   registrationNumber: "U27400TS2024PTC192467",
+  gstNumber: "36AAKCV6494N1ZB",
   instagram: "https://www.instagram.com/ves.solutions/",
   linkedin: "https://www.linkedin.com/search/results/companies/?keywords=Vishwakarma%20Evolution%20Solutions",
   map: "https://www.google.com/maps/search/?api=1&query=Azamnagar%20Bhupalpally%20Telangana",
