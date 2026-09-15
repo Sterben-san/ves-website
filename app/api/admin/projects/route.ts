@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
-import { booleanField, errorResponse, json, parseProjectUploadForm, requireAdmin } from "@/server/interfaces/http";
+import { booleanField, errorResponse, json, logAdminMutationFailure, parseProjectUploadForm, requireAdmin } from "@/server/interfaces/http";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -46,6 +46,7 @@ export async function POST(request: NextRequest) {
     });
     return json({ project }, { status: 201 });
   } catch (error) {
+    logAdminMutationFailure("projects.create", error);
     return errorResponse(error, 400);
   }
 }

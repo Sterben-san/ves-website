@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { getPrisma } from "@/server/config/db";
 import { env, getProductionEnvIssues } from "@/server/config/env";
+import { ensureProjectSchemaCompatibility } from "@/server/infrastructure/prisma/schemaCompatibility";
 import { json } from "@/server/interfaces/http";
 
 export const runtime = "nodejs";
@@ -44,6 +45,7 @@ export async function GET(request: NextRequest) {
 async function getDatabaseStatus() {
   try {
     const prisma = getPrisma();
+    await ensureProjectSchemaCompatibility("deployment.status");
     const admins = await prisma.admin.findMany({
       select: { email: true, name: true, lastLoginAt: true, createdAt: true, updatedAt: true },
       orderBy: { email: "asc" }

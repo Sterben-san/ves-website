@@ -27,6 +27,14 @@ export function logPublicRouteFailure(route: string, error: unknown) {
   console.warn(`[public-route:${route}] Returning safe fallback after route failed.`, error);
 }
 
+export function logAdminMutationFailure(route: string, error: unknown, details?: Record<string, unknown>) {
+  console.error(`[admin-route:${route}] Mutation failed.`, {
+    ...details,
+    errorName: error instanceof Error ? error.name : typeof error,
+    errorMessage: error instanceof Error ? error.message : String(error)
+  });
+}
+
 export function setAuthCookies(response: NextResponse, accessToken: string, refreshToken?: string) {
   response.cookies.set(accessCookie, accessToken, {
     httpOnly: true,
@@ -78,6 +86,7 @@ export async function parseUploadForm(request: NextRequest) {
   const buffer = Buffer.from(await file.arrayBuffer());
   const detected = await fileTypeFromBuffer(buffer);
   const mimeType = requireDetectedMime(detected?.mime);
+  console.info("[upload-validation]", { route: request.nextUrl.pathname, fileName: file.name, size: file.size, detectedMime: mimeType });
 
   return {
     buffer,
@@ -165,11 +174,13 @@ async function readOptionalFile(value: FormDataEntryValue | null) {
   assertUploadSize(value);
   const buffer = Buffer.from(await value.arrayBuffer());
   const detected = await fileTypeFromBuffer(buffer);
+  const mimeType = requireDetectedMime(detected?.mime);
+  console.info("[upload-validation]", { fileName: value.name, size: value.size, detectedMime: mimeType });
 
   return {
     buffer,
     fileName: value.name,
-    mimeType: requireDetectedMime(detected?.mime)
+    mimeType
   };
 }
 

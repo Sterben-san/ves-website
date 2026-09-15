@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
-import { errorResponse, json, parseUploadForm, requireAdmin } from "@/server/interfaces/http";
+import { errorResponse, json, logAdminMutationFailure, parseUploadForm, requireAdmin } from "@/server/interfaces/http";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -17,6 +17,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     });
     return json({ media });
   } catch (error) {
+    const { sectionKey } = await params;
+    logAdminMutationFailure("media.upload", error, { sectionKey: decodeURIComponent(sectionKey) });
     return errorResponse(error, 400);
   }
 }
@@ -28,6 +30,8 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     const media = await container.deleteSectionMedia.execute(decodeURIComponent(sectionKey));
     return json({ media });
   } catch (error) {
+    const { sectionKey } = await params;
+    logAdminMutationFailure("media.delete", error, { sectionKey: decodeURIComponent(sectionKey) });
     return errorResponse(error, 400);
   }
 }
@@ -44,6 +48,8 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     const media = await container.updateSectionAltText.execute(decodeURIComponent(sectionKey), input.altText, admin.id);
     return json({ media });
   } catch (error) {
+    const { sectionKey } = await params;
+    logAdminMutationFailure("media.altText", error, { sectionKey: decodeURIComponent(sectionKey) });
     return errorResponse(error, 400);
   }
 }

@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
-import { booleanField, errorResponse, json, parseProjectUploadForm, requireAdmin } from "@/server/interfaces/http";
+import { booleanField, errorResponse, json, logAdminMutationFailure, parseProjectUploadForm, requireAdmin } from "@/server/interfaces/http";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -39,6 +39,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     });
     return json({ project });
   } catch (error) {
+    logAdminMutationFailure("projects.update", error);
     return errorResponse(error, 400);
   }
 }
@@ -60,6 +61,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     await container.deleteProject.execute(id);
     return json({ ok: true });
   } catch (error) {
+    logAdminMutationFailure("projects.delete", error);
     return errorResponse(error, 400);
   }
 }

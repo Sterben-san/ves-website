@@ -30,6 +30,7 @@ import type {
   ISocialLinkRepository,
   ITeamMemberRepository
 } from "@/server/domain/repositories";
+import { ensureProjectSchemaCompatibility } from "./schemaCompatibility";
 
 export class PrismaAdminRepository implements IAdminRepository {
   async findByEmail(email: string): Promise<Admin | null> {
@@ -132,11 +133,13 @@ export class PrismaSectionCopyRepository implements ISectionCopyRepository {
 
 export class PrismaProjectRepository implements IProjectRepository {
   async list(): Promise<Project[]> {
+    await ensureProjectSchemaCompatibility("project.list");
     const docs = await getPrisma().project.findMany({ orderBy: [{ displayOrder: "asc" }, { createdAt: "asc" }] });
     return docs.map(toProject);
   }
 
   async listPublished(featured?: boolean): Promise<Project[]> {
+    await ensureProjectSchemaCompatibility("project.listPublished");
     const docs = await getPrisma().project.findMany({
       where: { published: true, ...(featured === undefined ? {} : { featured }) },
       orderBy: [{ displayOrder: "asc" }, { createdAt: "asc" }]
@@ -145,21 +148,25 @@ export class PrismaProjectRepository implements IProjectRepository {
   }
 
   async findById(id: string): Promise<Project | null> {
+    await ensureProjectSchemaCompatibility("project.findById");
     const doc = await getPrisma().project.findUnique({ where: { id } });
     return doc ? toProject(doc) : null;
   }
 
   async findBySlug(slug: string): Promise<Project | null> {
+    await ensureProjectSchemaCompatibility("project.findBySlug");
     const doc = await getPrisma().project.findUnique({ where: { slug } });
     return doc ? toProject(doc) : null;
   }
 
   async create(project: Omit<Project, "id" | "createdAt" | "updatedAt">): Promise<Project> {
+    await ensureProjectSchemaCompatibility("project.create");
     const doc = await getPrisma().project.create({ data: projectToPrisma(project) as Prisma.ProjectCreateInput });
     return toProject(doc);
   }
 
   async update(id: string, project: Partial<Omit<Project, "id" | "createdAt" | "updatedAt">>): Promise<Project | null> {
+    await ensureProjectSchemaCompatibility("project.update");
     try {
       const doc = await getPrisma().project.update({ where: { id }, data: toPrismaUpdate(project) as Prisma.ProjectUpdateInput });
       return toProject(doc);
@@ -170,10 +177,12 @@ export class PrismaProjectRepository implements IProjectRepository {
   }
 
   async delete(id: string): Promise<void> {
+    await ensureProjectSchemaCompatibility("project.delete");
     await getPrisma().project.delete({ where: { id } }).catch(ignoreNotFound);
   }
 
   async reorder(ids: string[]): Promise<Project[]> {
+    await ensureProjectSchemaCompatibility("project.reorder");
     await getPrisma().$transaction(ids.map((id, index) => getPrisma().project.update({ where: { id }, data: { displayOrder: index } })));
     return this.list();
   }
