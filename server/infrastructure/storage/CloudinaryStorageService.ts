@@ -12,9 +12,9 @@ export class CloudinaryStorageService implements IStorageService {
     });
   }
 
-  async upload(input: { buffer: Buffer; fileName: string; mimeType: string; folder: string }) {
+  async upload(input: { buffer: Buffer; fileName: string; mimeType: string; folder: string; resourceType?: StoredAssetKind }) {
     this.configure();
-    const mediaType = resolveResourceType(input.mimeType);
+    const mediaType = input.resourceType ?? resolveResourceType(input.mimeType);
     const result = await new Promise<UploadApiResponse>((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
         {
@@ -25,9 +25,26 @@ export class CloudinaryStorageService implements IStorageService {
         },
         (error, uploadResult) => {
           if (error || !uploadResult) {
+            console.error("[cloudinary-upload]", {
+              status: "failed",
+              folder: input.folder,
+              fileName: input.fileName,
+              mimeType: input.mimeType,
+              resourceType: mediaType,
+              message: error?.message
+            });
             reject(error ?? new Error("Cloudinary upload failed."));
             return;
           }
+          console.info("[cloudinary-upload]", {
+            status: "uploaded",
+            folder: input.folder,
+            fileName: input.fileName,
+            mimeType: input.mimeType,
+            resourceType: mediaType,
+            publicId: uploadResult.public_id,
+            bytes: uploadResult.bytes
+          });
           resolve(uploadResult);
         }
       );

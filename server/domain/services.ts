@@ -18,6 +18,7 @@ export interface IStorageService {
     fileName: string;
     mimeType: string;
     folder: string;
+    resourceType?: StoredAsset["mediaType"];
   }): Promise<StoredAsset>;
   delete(publicId: string): Promise<void>;
 }

@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
-import { booleanField, errorResponse, json, parseOptionalUploadForm, requireAdmin } from "@/server/interfaces/http";
+import { booleanField, errorResponse, json, logAdminMutationFailure, parseOptionalUploadForm, requireAdmin } from "@/server/interfaces/http";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -39,6 +39,7 @@ export async function POST(request: NextRequest) {
     });
     return json({ certificate }, { status: 201 });
   } catch (error) {
+    logAdminMutationFailure("certificates.create", error);
     return errorResponse(error, 400);
   }
 }

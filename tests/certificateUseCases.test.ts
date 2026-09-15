@@ -56,8 +56,8 @@ class FakeStorage implements IStorageService {
 
   async upload(): Promise<StoredAsset> {
     return {
-      mediaType: "raw",
-      url: "https://res.cloudinary.com/demo/raw/upload/certificate.pdf",
+      mediaType: "image",
+      url: "https://res.cloudinary.com/demo/image/upload/v1/certificate.pdf",
       publicId: "certificate-pdf"
     };
   }
@@ -86,6 +86,8 @@ describe("certificate use cases", () => {
     const certificate = await new CreateCertificateUseCase(new FakeCertificateRepository(), new FakeStorage()).execute(input);
 
     expect(certificate.certificateUrl).toContain("certificate.pdf");
+    expect(certificate.previewUrl).toContain("/image/upload/f_jpg,pg_1,w_900,c_fit/");
+    expect(certificate.previewUrl).toContain("certificate.jpg");
     expect(certificate.published).toBe(true);
   });
 

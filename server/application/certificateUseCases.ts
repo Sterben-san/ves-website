@@ -65,7 +65,8 @@ export class CreateCertificateUseCase {
       displayOrder: input.displayOrder ?? currentSortOrder(),
       published: input.published ?? true,
       certificateUrl: file.certificateUrl,
-      certificatePublicId: file.certificatePublicId
+      certificatePublicId: file.certificatePublicId,
+      previewUrl: file.previewUrl
     });
   }
 }
@@ -157,13 +158,20 @@ async function uploadCertificate(storage: IStorageService, file: UploadFileInput
 
   const stored = await storage.upload({
     ...file,
-    folder: `ves/certifications/${slugFolder(title)}`
+    folder: `ves/certifications/${slugFolder(title)}`,
+    resourceType: "image"
   });
 
   return {
     certificateUrl: stored.url,
-    certificatePublicId: stored.publicId
+    certificatePublicId: stored.publicId,
+    previewUrl: certificatePreviewUrl(stored.url)
   };
+}
+
+function certificatePreviewUrl(url: string) {
+  const withTransformation = url.replace("/image/upload/", "/image/upload/f_jpg,pg_1,w_900,c_fit/");
+  return withTransformation.replace(/\.pdf($|\?)/, ".jpg$1");
 }
 
 function required(value: string | undefined, label: string) {
