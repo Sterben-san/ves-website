@@ -8,6 +8,7 @@ import { useState } from "react";
 const navItems = [
   { href: "/admin/dashboard", label: "Overview", short: "O", exact: true },
   { href: "/admin/dashboard/media", label: "Section Media", short: "M" },
+  { href: "/admin/dashboard/about", label: "About Section", short: "B" },
   { href: "/admin/dashboard/homepage-news", label: "Homepage News", short: "N" },
   { href: "/admin/dashboard/announcements", label: "Announcements", short: "A" },
   { href: "/admin/dashboard/internships", label: "Internships", short: "I" },
