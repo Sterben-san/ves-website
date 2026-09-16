@@ -16,6 +16,7 @@ import { Stats } from "./components/Stats";
 import { Team } from "./components/Team";
 import { InternshipNoticeBar } from "./components/InternshipNoticeBar";
 import { getActiveInternships, getActiveTeamMembers, getFieldProcessSteps, getHomepageSectionCopies, getNewsSectionCopy, getPinnedAnnouncement, getPublishedAnnouncements, getPublishedCertificates, getPublishedHomepageNewsItems, getPublishedProjects, getSocialLinks, heroStatSectionKeys } from "@/lib/content";
+import { aboutDetailSectionKeys } from "@/server/application/sectionCopyUseCases";
 
 export const dynamic = "force-dynamic";
 
@@ -35,6 +36,7 @@ export default async function HomePage() {
     getPublishedCertificates()
   ]);
   const heroStats = heroStatSectionKeys.map((sectionKey) => sectionCopies[sectionKey]).filter(Boolean);
+  const aboutDetails = Object.fromEntries(aboutDetailSectionKeys.map((sectionKey) => [sectionKey, sectionCopies[sectionKey]]));
 
   return (
     <>
@@ -46,7 +48,7 @@ export default async function HomePage() {
         <InternshipNoticeBar copy={sectionCopies["home.internships"]} internships={internships.slice(0, 2)} />
         <Stats stats={heroStats} />
         <Journey copy={sectionCopies["home.journey"]} steps={fieldProcessSteps} />
-        <About copy={sectionCopies["home.about"]} media={media} />
+        <About copy={sectionCopies["home.about"]} details={aboutDetails} media={media} />
         <Certifications certificates={certificates} copy={sectionCopies["home.certifications"]} />
         <Solutions copy={sectionCopies["home.solutions"]} projects={featuredProjects} />
         <LatestUpdates items={homepageNews.slice(0, newsSectionCopy.maxItems)} copy={newsSectionCopy} />

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { defaultNewsSectionCopy, GetSectionCopyUseCase, heroStatSectionCopies, UpdateSectionCopyUseCase } from "@/server/application/sectionCopyUseCases";
+import { aboutDetailSectionCopies, aboutDetailSectionKeys, defaultNewsSectionCopy, GetSectionCopyUseCase, heroStatSectionCopies, UpdateSectionCopyUseCase } from "@/server/application/sectionCopyUseCases";
 import type { SectionCopy } from "@/server/domain/entities";
 import type { ISectionCopyRepository } from "@/server/domain/repositories";
 
@@ -66,5 +66,32 @@ describe("section copy use cases", () => {
     expect(copy.title).toBe("2025");
     expect(copy.body).toBe("Field deployment year");
     expect(copy.visible).toBe(false);
+  });
+
+  it("keeps every about text detail editable through section copy", async () => {
+    const repo = new FakeSectionCopyRepository();
+    const mission = aboutDetailSectionCopies.find((copy) => copy.sectionKey === "home.about.mission");
+
+    expect(aboutDetailSectionKeys).toEqual([
+      "home.about.mission",
+      "home.about.card.deployment",
+      "home.about.card.controlBoxes",
+      "home.about.card.billReduction",
+      "home.about.card.warranty"
+    ]);
+    expect(mission?.body).toContain("field-tested automation");
+
+    const copy = await new UpdateSectionCopyUseCase(repo).execute({
+      sectionKey: "home.about.card.deployment",
+      title: "Collector-approved field deployment",
+      body: "Collector-approved field deployment",
+      visible: true
+    });
+
+    expect(copy.title).toBe("Collector-approved field deployment");
+    expect(await repo.findBySectionKey("home.about.card.deployment")).toMatchObject({
+      title: "Collector-approved field deployment",
+      body: "Collector-approved field deployment"
+    });
   });
 });

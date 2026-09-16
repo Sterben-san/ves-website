@@ -22,10 +22,17 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   try {
     const { container } = await requireAdmin(request);
     const { sectionKey } = await params;
+    const decodedSectionKey = decodeURIComponent(sectionKey);
     const input = schema.parse(await request.json());
     const copy = await container.updateSectionCopy.execute({
-      sectionKey: decodeURIComponent(sectionKey),
+      sectionKey: decodedSectionKey,
       ...input
+    });
+    console.info("[section-copy-validation]", {
+      sectionKey: decodedSectionKey,
+      titleLength: copy.title.length,
+      bodyLength: copy.body.length,
+      visible: copy.visible
     });
     return json({ copy });
   } catch (error) {

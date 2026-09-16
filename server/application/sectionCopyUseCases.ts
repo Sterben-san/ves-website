@@ -64,6 +64,66 @@ export const heroStatSectionCopies: Array<Omit<SectionCopy, "id" | "updatedAt">>
 
 export const heroStatSectionKeys = heroStatSectionCopies.map((copy) => copy.sectionKey);
 
+export const aboutDetailSectionCopies: Array<Omit<SectionCopy, "id" | "updatedAt">> = [
+  {
+    sectionKey: "home.about.mission",
+    eyebrow: "About Detail",
+    title: "Mission Line",
+    body: "Build simple, rugged, field-tested automation that works in real operating conditions, fits district-level budgets, and can be installed and serviced by an accountable local team.",
+    visible: true,
+    theme: "dark",
+    animationDirection: "right",
+    animationSeconds: 46,
+    maxItems: 1
+  },
+  {
+    sectionKey: "home.about.card.deployment",
+    eyebrow: "About Card",
+    title: "District-approved deployment",
+    body: "District-approved deployment",
+    visible: true,
+    theme: "dark",
+    animationDirection: "right",
+    animationSeconds: 46,
+    maxItems: 1
+  },
+  {
+    sectionKey: "home.about.card.controlBoxes",
+    eyebrow: "About Card",
+    title: "Field-ready control boxes",
+    body: "Field-ready control boxes",
+    visible: true,
+    theme: "dark",
+    animationDirection: "right",
+    animationSeconds: 46,
+    maxItems: 1
+  },
+  {
+    sectionKey: "home.about.card.billReduction",
+    eyebrow: "About Card",
+    title: "Up to 50% bill-reduction potential",
+    body: "Up to 50% bill-reduction potential",
+    visible: true,
+    theme: "dark",
+    animationDirection: "right",
+    animationSeconds: 46,
+    maxItems: 1
+  },
+  {
+    sectionKey: "home.about.card.warranty",
+    eyebrow: "About Card",
+    title: "One-year service warranty",
+    body: "One-year service warranty",
+    visible: true,
+    theme: "dark",
+    animationDirection: "right",
+    animationSeconds: 46,
+    maxItems: 1
+  }
+];
+
+export const aboutDetailSectionKeys = aboutDetailSectionCopies.map((copy) => copy.sectionKey);
+
 export const editableSectionCopies: Array<Omit<SectionCopy, "id" | "updatedAt">> = [
   {
     sectionKey: "home.hero",
@@ -101,6 +161,7 @@ export const editableSectionCopies: Array<Omit<SectionCopy, "id" | "updatedAt">>
     animationSeconds: 46,
     maxItems: 8
   },
+  ...aboutDetailSectionCopies,
   {
     sectionKey: "home.certifications",
     eyebrow: "Certifications",
